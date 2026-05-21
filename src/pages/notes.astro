@@ -11,7 +11,7 @@ const allNotes = (await getCollection('notes'))
 const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
 ---
 
-<Layout title="Study Notes" description="A collection of study notes, learning materials, and reference documents.">
+<Layout title="Study Notes" description="A collection of study notes, learning materials, and reference documents." compactHeader={true}>
   <div class="container">
 
     <header class="page-header">

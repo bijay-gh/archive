@@ -1,5 +1,6 @@
 ---
 import Header from '../components/Header.astro';
+import HeaderCompact from '../components/HeaderCompact.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 
@@ -7,12 +8,14 @@ interface Props {
   title?: string;
   description?: string;
   ogType?: string;
+  compactHeader?: boolean;
 }
 
 const {
   title = 'The Chronicle',
   description = 'A personal repository of knowledge & inquiry.',
   ogType = 'website',
+  compactHeader = false,
 } = Astro.props;
 
 const fullTitle = title === 'The Chronicle' ? title : `${title} — The Chronicle`;
@@ -34,7 +37,7 @@ const fullTitle = title === 'The Chronicle' ? title : `${title} — The Chronicl
     <title>{fullTitle}</title>
   </head>
   <body>
-    <Header />
+    {compactHeader ? <HeaderCompact /> : <Header />}
     <main class="site-main">
       <slot />
     </main>

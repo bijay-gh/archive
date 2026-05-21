@@ -12,7 +12,7 @@ const allPosts = (await getCollection('posts'))
 const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))].sort();
 ---
 
-<Layout title="The Archives" description="A complete archive of all blog posts and writings.">
+<Layout title="The Archives" description="A complete archive of all blog posts and writings." compactHeader={true}>
   <div class="container">
 
     <header class="archive-header">

@@ -24,7 +24,7 @@ const dateStr = project.data.pubDate.toLocaleDateString('en-US', {
 const statusLabel = project.data.status.replace('-', ' ');
 ---
 
-<Layout title={project.data.title} description={project.data.description} ogType="article">
+<Layout title={project.data.title} description={project.data.description} ogType="article" compactHeader={true}>
   <article class="article container">
     <header class="article__header">
       <div class="article__badges">

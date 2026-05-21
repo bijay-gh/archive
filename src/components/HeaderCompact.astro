@@ -1,0 +1,143 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/blog/", label: "Blog" },
+  { href: "/notes/", label: "Notes" },
+  { href: "/reports/", label: "Reports" },
+  { href: "/projects/", label: "Projects" },
+  { href: "/about/", label: "About" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="masthead masthead--compact">
+  <div class="masthead__inner container">
+    <div class="masthead__top-row">
+      <a href="/" class="masthead__title-link">
+        <h1 class="masthead__title">The Chronicle</h1>
+      </a>
+      
+      <div class="masthead__controls">
+        <nav class="masthead__nav" aria-label="Main navigation">
+          <ul class="masthead__nav-list">
+            {
+              navLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class:list={[
+                      "masthead__nav-link",
+                      { active: currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) },
+                    ]}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <ThemeToggle />
+      </div>
+    </div>
+    <div class="masthead__rule masthead__rule--bottom"></div>
+  </div>
+</header>
+
+<style>
+  .masthead {
+    padding-top: var(--sp-md);
+  }
+
+  .masthead__top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-md);
+  }
+
+  .masthead__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-md);
+  }
+
+  .masthead__rule--bottom {
+    border-top: 3px double var(--border-dark);
+    margin-top: var(--sp-sm);
+    margin-bottom: var(--sp-md);
+  }
+
+  .masthead__title-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .masthead__title-link:hover {
+    color: inherit;
+  }
+
+  .masthead__title {
+    font-family: var(--font-heading);
+    font-size: var(--fs-2xl);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1;
+  }
+
+  /* ── Navigation ── */
+  .masthead__nav-list {
+    display: flex;
+    gap: var(--sp-xs);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+  }
+
+  .masthead__nav-list li:not(:last-child)::after {
+    content: "·";
+    color: var(--text-muted);
+    margin-left: var(--sp-xs);
+    font-size: var(--fs-base);
+  }
+
+  .masthead__nav-link {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .masthead__nav-link:hover,
+  .masthead__nav-link.active {
+    color: var(--accent);
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    .masthead__top-row {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .masthead__controls {
+      flex-direction: column;
+      width: 100%;
+    }
+    
+    .masthead__nav-list {
+      justify-content: center;
+    }
+  }
+</style>

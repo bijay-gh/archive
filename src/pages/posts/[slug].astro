@@ -22,7 +22,7 @@ const dateStr = post.data.pubDate.toLocaleDateString('en-US', {
 });
 ---
 
-<Layout title={post.data.title} description={post.data.description} ogType="article">
+<Layout title={post.data.title} description={post.data.description} ogType="article" compactHeader={true}>
   <article class="article container">
     <header class="article__header">
       <span class="category-label">Blog Post</span>

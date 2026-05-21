@@ -9,7 +9,7 @@ const allProjects = (await getCollection('projects'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<Layout title="Works & Projects" description="Portfolio of ongoing and completed projects.">
+<Layout title="Works & Projects" description="Portfolio of ongoing and completed projects." compactHeader={true}>
   <div class="container">
     <header class="page-header">
       <h1 class="page-header__title">Works &amp; Projects</h1>

@@ -22,7 +22,7 @@ const dateStr = note.data.pubDate.toLocaleDateString('en-US', {
 });
 ---
 
-<Layout title={note.data.title} description={note.data.description} ogType="article">
+<Layout title={note.data.title} description={note.data.description} ogType="article" compactHeader={true}>
   <article class="article container">
     <header class="article__header">
       <span class="category-label category-label--forest">{note.data.subject}</span>

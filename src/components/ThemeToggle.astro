@@ -1,0 +1,62 @@
+---
+---
+
+<button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Night Reading Mode">
+  <span class="theme-toggle__icon theme-toggle__icon--light">☀</span>
+  <span class="theme-toggle__icon theme-toggle__icon--dark">☽</span>
+</button>
+
+<script is:inline>
+  // Apply saved theme immediately to prevent flash
+  (function() {
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    });
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    font-family: var(--font-label);
+    font-size: var(--fs-base);
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.3em 0.5em;
+    line-height: 1;
+    transition: all var(--transition-fast);
+    position: relative;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .theme-toggle__icon--dark {
+    display: none;
+  }
+
+  :global([data-theme="dark"]) .theme-toggle__icon--light {
+    display: none;
+  }
+
+  :global([data-theme="dark"]) .theme-toggle__icon--dark {
+    display: inline;
+  }
+</style>

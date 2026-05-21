@@ -1,0 +1,109 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import OrnamentalDivider from '../components/OrnamentalDivider.astro';
+import { getCollection } from 'astro:content';
+
+const allNotes = (await getCollection('notes'))
+  .filter(n => !n.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
+---
+
+<Layout title="Study Notes" description="A collection of study notes, learning materials, and reference documents.">
+  <div class="container">
+
+    <header class="page-header">
+      <h1 class="page-header__title">Study Notes</h1>
+      <p class="page-header__sub">From the study — notes, references, and learning materials.</p>
+      <OrnamentalDivider variant="rule" />
+    </header>
+
+    {subjects.length > 1 && (
+      <nav class="subject-nav" aria-label="Filter by subject">
+        <span class="label">Subjects:</span>
+        <span class="subject-list">
+          {subjects.map(subject => (
+            <span class="tag">{subject}</span>
+          ))}
+        </span>
+      </nav>
+    )}
+
+    <section class="archive-list" aria-label="Study notes">
+      {allNotes.map(note => (
+        <div class="archive-item">
+          <div class="archive-item__meta">
+            <span class="category-label category-label--forest">{note.data.subject}</span>
+          </div>
+          <PostCard
+            title={note.data.title}
+            description={note.data.description}
+            pubDate={note.data.pubDate}
+            href={`/notes/${note.id}/`}
+            tags={note.data.tags}
+          />
+        </div>
+      ))}
+    </section>
+
+    {allNotes.length === 0 && (
+      <p class="archive-empty">No notes published yet. Check back soon.</p>
+    )}
+
+    <OrnamentalDivider variant="floral" />
+  </div>
+</Layout>
+
+<style>
+  .page-header {
+    text-align: center;
+    padding-top: var(--sp-2xl);
+  }
+
+  .page-header__title {
+    font-size: var(--fs-4xl);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .page-header__sub {
+    font-family: var(--font-body);
+    font-size: var(--fs-lg);
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .subject-nav {
+    text-align: center;
+    margin-bottom: var(--sp-xl);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-sm);
+    flex-wrap: wrap;
+  }
+
+  .subject-list {
+    display: flex;
+    gap: var(--sp-xs);
+    flex-wrap: wrap;
+  }
+
+  .archive-list {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+  }
+
+  .archive-item__meta {
+    padding-top: var(--sp-lg);
+  }
+
+  .archive-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    padding: var(--sp-3xl) 0;
+  }
+</style>

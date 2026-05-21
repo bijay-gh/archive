@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.filter(p => !p.data.draft).map(project => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const wordCount = project.body ? project.body.split(/\s+/).length : 0;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+const dateStr = project.data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+
+const statusLabel = project.data.status.replace('-', ' ');
+---
+
+<Layout title={project.data.title} description={project.data.description} ogType="article">
+  <article class="article container">
+    <header class="article__header">
+      <div class="article__badges">
+        <span class="category-label">Project</span>
+        <span class:list={['status-badge', `status-badge--${project.data.status}`]}>{statusLabel}</span>
+      </div>
+      <h1 class="article__title">{project.data.title}</h1>
+      <div class="article__meta label">
+        <time datetime={project.data.pubDate.toISOString()}>{dateStr}</time>
+        <span class="article__sep">·</span>
+        <span>{readingTime} min read</span>
+      </div>
+      {project.data.url && (
+        <a href={project.data.url} target="_blank" rel="noopener" class="btn project-link">
+          View Project →
+        </a>
+      )}
+    </header>
+    <OrnamentalDivider variant="stars" />
+    <div class="article__body prose drop-cap">
+      <Content />
+    </div>
+    <OrnamentalDivider variant="floral" />
+    <footer class="article__footer">
+      <a href="/projects/" class="btn">← Back to Projects</a>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .article { padding: var(--sp-2xl) 0; max-width: var(--max-width-content); }
+  .article__header { text-align: center; margin-bottom: var(--sp-md); }
+  .article__badges { display: flex; justify-content: center; gap: var(--sp-sm); align-items: center; }
+  .article__title { font-size: var(--fs-4xl); margin: var(--sp-sm) 0 var(--sp-md); line-height: 1.15; }
+  .article__meta { display: flex; justify-content: center; gap: var(--sp-sm); flex-wrap: wrap; margin-bottom: var(--sp-md); }
+  .article__sep { color: var(--text-muted); }
+  .article__footer { text-align: center; padding-top: var(--sp-xl); }
+  .status-badge {
+    font-family: var(--font-label);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2em 0.6em;
+    border: 1px solid var(--accent-alt);
+    color: var(--accent-alt);
+  }
+  .status-badge--completed { border-color: var(--accent); color: var(--accent); }
+  .status-badge--archived { border-color: var(--text-muted); color: var(--text-muted); }
+  .project-link { margin-top: var(--sp-sm); }
+  @media (max-width: 600px) { .article__title { font-size: var(--fs-2xl); } }
+</style>

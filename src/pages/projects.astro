@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import OrnamentalDivider from '../components/OrnamentalDivider.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = (await getCollection('projects'))
+  .filter(p => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title="Works & Projects" description="Portfolio of ongoing and completed projects.">
+  <div class="container">
+    <header class="page-header">
+      <h1 class="page-header__title">Works &amp; Projects</h1>
+      <p class="page-header__sub">A catalogue of ongoing and completed works.</p>
+      <OrnamentalDivider variant="stars" />
+    </header>
+    <section class="archive-list">
+      {allProjects.map(project => (
+        <div class="project-item">
+          <span class:list={['status-badge', `status-badge--${project.data.status}`]}>
+            {project.data.status.replace('-', ' ')}
+          </span>
+          <PostCard
+            title={project.data.title}
+            description={project.data.description}
+            pubDate={project.data.pubDate}
+            href={`/projects/${project.id}/`}
+            tags={project.data.tags}
+          />
+        </div>
+      ))}
+    </section>
+    {allProjects.length === 0 && <p class="empty">No projects yet.</p>}
+    <OrnamentalDivider variant="floral" />
+  </div>
+</Layout>
+
+<style>
+  .page-header { text-align: center; padding-top: var(--sp-2xl); }
+  .page-header__title { font-size: var(--fs-4xl); margin-bottom: var(--sp-sm); }
+  .page-header__sub { font-size: var(--fs-lg); color: var(--text-muted); font-style: italic; margin: 0; }
+  .archive-list { max-width: var(--max-width-content); margin: 0 auto; }
+  .project-item { position: relative; }
+  .status-badge {
+    display: inline-block;
+    font-family: var(--font-label);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.2em 0.6em;
+    border: 1px solid var(--accent-alt);
+    color: var(--accent-alt);
+    margin-top: var(--sp-lg);
+  }
+  .status-badge--completed { border-color: var(--accent); color: var(--accent); }
+  .status-badge--archived { border-color: var(--text-muted); color: var(--text-muted); }
+  .empty { text-align: center; color: var(--text-muted); font-style: italic; padding: var(--sp-3xl) 0; }
+</style>

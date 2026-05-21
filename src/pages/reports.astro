@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import OrnamentalDivider from '../components/OrnamentalDivider.astro';
+import { getCollection } from 'astro:content';
+
+const allReports = (await getCollection('reports'))
+  .filter(r => !r.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Layout title="Reports & Essays" description="Long-form reports, analyses, and essays.">
+  <div class="container">
+    <header class="page-header">
+      <h1 class="page-header__title">Reports &amp; Essays</h1>
+      <p class="page-header__sub">In-depth analyses, investigations, and long-form writing.</p>
+      <OrnamentalDivider variant="section" />
+    </header>
+    <section class="archive-list">
+      {allReports.map(report => (
+        <PostCard
+          title={report.data.title}
+          description={report.data.description}
+          pubDate={report.data.pubDate}
+          href={`/reports/${report.id}/`}
+          tags={report.data.tags}
+        />
+      ))}
+    </section>
+    {allReports.length === 0 && <p class="empty">No reports published yet.</p>}
+    <OrnamentalDivider variant="floral" />
+  </div>
+</Layout>
+
+<style>
+  .page-header { text-align: center; padding-top: var(--sp-2xl); }
+  .page-header__title { font-size: var(--fs-4xl); margin-bottom: var(--sp-sm); }
+  .page-header__sub { font-size: var(--fs-lg); color: var(--text-muted); font-style: italic; margin: 0; }
+  .archive-list { max-width: var(--max-width-content); margin: 0 auto; }
+  .empty { text-align: center; color: var(--text-muted); font-style: italic; padding: var(--sp-3xl) 0; }
+</style>

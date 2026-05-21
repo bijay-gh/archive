@@ -1,11 +1,196 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import PostCard from '../components/PostCard.astro';
+import OrnamentalDivider from '../components/OrnamentalDivider.astro';
+import { getCollection } from 'astro:content';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Fetch all collections
+const allPosts = (await getCollection('posts'))
+  .filter(p => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const allNotes = (await getCollection('notes'))
+  .filter(n => !n.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const allReports = (await getCollection('reports'))
+  .filter(r => !r.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const allProjects = (await getCollection('projects'))
+  .filter(p => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Featured article — first featured post, or most recent
+const featured = allPosts.find(p => p.data.featured) || allPosts[0];
+const remainingPosts = allPosts.filter(p => p.id !== featured?.id).slice(0, 4);
+const recentNotes = allNotes.slice(0, 4);
+const recentReports = [...allReports, ...allProjects]
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 4);
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="The Chronicle" description="A personal repository of knowledge, writing, and inquiry.">
+  <div class="container">
+
+    <!-- Edition Banner -->
+    <div class="edition-banner">
+      <span class="edition-banner__label">Latest Edition</span>
+    </div>
+
+    <!-- Featured Article -->
+    {featured && (
+      <section class="featured" aria-label="Featured article">
+        <PostCard
+          title={featured.data.title}
+          description={featured.data.description}
+          pubDate={featured.data.pubDate}
+          href={`/posts/${featured.id}/`}
+          tags={featured.data.tags}
+          variant="hero"
+        />
+      </section>
+    )}
+
+    <!-- Three Column Grid -->
+    <section class="column-grid" aria-label="Recent publications">
+
+      <!-- Column 1: Dispatches (Blog) -->
+      <div class="column">
+        <h2 class="column__heading">
+          <span class="column__heading-text">Dispatches</span>
+        </h2>
+        <p class="column__sub label">Recent writings & essays</p>
+        {remainingPosts.length > 0 ? (
+          remainingPosts.map(post => (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              href={`/posts/${post.id}/`}
+              variant="compact"
+            />
+          ))
+        ) : (
+          <p class="column__empty">No dispatches yet.</p>
+        )}
+        <a href="/blog/" class="btn column__cta">View All Posts</a>
+      </div>
+
+      <!-- Column 2: From the Study (Notes) -->
+      <div class="column">
+        <h2 class="column__heading">
+          <span class="column__heading-text">From the Study</span>
+        </h2>
+        <p class="column__sub label">Notes & learning materials</p>
+        {recentNotes.length > 0 ? (
+          recentNotes.map(note => (
+            <PostCard
+              title={note.data.title}
+              description={note.data.description}
+              pubDate={note.data.pubDate}
+              href={`/notes/${note.id}/`}
+              variant="compact"
+            />
+          ))
+        ) : (
+          <p class="column__empty">No notes yet.</p>
+        )}
+        <a href="/notes/" class="btn btn--alt column__cta">View All Notes</a>
+      </div>
+
+      <!-- Column 3: Field Reports (Reports + Projects) -->
+      <div class="column">
+        <h2 class="column__heading">
+          <span class="column__heading-text">Field Reports</span>
+        </h2>
+        <p class="column__sub label">Reports, projects & works</p>
+        {recentReports.length > 0 ? (
+          recentReports.map(item => {
+            const isProject = 'status' in item.data;
+            const href = isProject ? `/projects/${item.id}/` : `/reports/${item.id}/`;
+            return (
+              <PostCard
+                title={item.data.title}
+                description={item.data.description}
+                pubDate={item.data.pubDate}
+                href={href}
+                variant="compact"
+              />
+            );
+          })
+        ) : (
+          <p class="column__empty">No reports yet.</p>
+        )}
+        <div class="column__cta-group">
+          <a href="/reports/" class="btn column__cta">Reports</a>
+          <a href="/projects/" class="btn column__cta">Projects</a>
+        </div>
+      </div>
+    </section>
+
+    <OrnamentalDivider variant="section" />
+
+  </div>
 </Layout>
+
+<style>
+  .edition-banner {
+    text-align: center;
+    padding: var(--sp-md) 0 0;
+  }
+
+  .edition-banner__label {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.3em 1em;
+    display: inline-block;
+  }
+
+  .featured {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+  }
+
+  .column__heading {
+    font-family: var(--font-heading);
+    font-size: var(--fs-lg);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0 0 var(--sp-xs);
+    padding-bottom: var(--sp-xs);
+    border-bottom: 2px solid var(--text-primary);
+  }
+
+  .column__sub {
+    margin-bottom: var(--sp-md);
+  }
+
+  .column__empty {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: var(--fs-sm);
+  }
+
+  .column__cta {
+    margin-top: var(--sp-lg);
+    display: inline-block;
+    font-size: 0.65rem;
+  }
+
+  .column__cta-group {
+    display: flex;
+    gap: var(--sp-sm);
+    margin-top: var(--sp-lg);
+  }
+
+  .column__cta-group .column__cta {
+    margin-top: 0;
+  }
+</style>

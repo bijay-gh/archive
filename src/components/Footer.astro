@@ -1,0 +1,116 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="colophon">
+  <div class="colophon__inner container">
+    <div class="colophon__rule"></div>
+
+    <div class="colophon__ornament" aria-hidden="true">❦</div>
+
+    <p class="colophon__heading">Colophon</p>
+
+    <p class="colophon__text">
+      This publication is typeset in <em>Playfair Display</em>, <em>EB Garamond</em>,
+      and <em>Josefin Sans</em>. Built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>
+      and set upon the open web with care.
+    </p>
+
+    <nav class="colophon__links" aria-label="Footer navigation">
+      <a href="/rss.xml" class="colophon__link">RSS Feed</a>
+      <span class="colophon__sep" aria-hidden="true">·</span>
+      <a href="/blog/" class="colophon__link">Archives</a>
+      <span class="colophon__sep" aria-hidden="true">·</span>
+      <a href="/about/" class="colophon__link">About</a>
+    </nav>
+
+    <p class="colophon__copyright">
+      &copy; {year} The Chronicle. All rights reserved.
+    </p>
+
+    <div class="colophon__rule colophon__rule--end"></div>
+  </div>
+</footer>
+
+<style>
+  .colophon {
+    margin-top: var(--sp-3xl);
+    padding-bottom: var(--sp-xl);
+  }
+
+  .colophon__inner {
+    text-align: center;
+  }
+
+  .colophon__rule {
+    border-top: 3px double var(--border-dark);
+    margin-bottom: var(--sp-xl);
+  }
+
+  .colophon__rule--end {
+    margin-top: var(--sp-xl);
+    margin-bottom: 0;
+    border-top: 2px solid var(--text-primary);
+  }
+
+  .colophon__ornament {
+    font-size: var(--fs-xl);
+    color: var(--text-muted);
+    margin-bottom: var(--sp-md);
+  }
+
+  .colophon__heading {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: var(--sp-md);
+  }
+
+  .colophon__text {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+    max-width: 28rem;
+    margin: 0 auto var(--sp-lg);
+    line-height: 1.6;
+  }
+
+  .colophon__text a {
+    color: var(--accent);
+  }
+
+  .colophon__links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-sm);
+    margin-bottom: var(--sp-lg);
+  }
+
+  .colophon__link {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .colophon__link:hover {
+    color: var(--accent);
+  }
+
+  .colophon__sep {
+    color: var(--text-muted);
+  }
+
+  .colophon__copyright {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin: 0;
+  }
+</style>

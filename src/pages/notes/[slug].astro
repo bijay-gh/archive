@@ -1,0 +1,55 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const notes = await getCollection('notes');
+  return notes.filter(n => !n.data.draft).map(note => ({
+    params: { slug: note.id },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+
+const wordCount = note.body ? note.body.split(/\s+/).length : 0;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+const dateStr = note.data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<Layout title={note.data.title} description={note.data.description} ogType="article">
+  <article class="article container">
+    <header class="article__header">
+      <span class="category-label category-label--forest">{note.data.subject}</span>
+      <h1 class="article__title">{note.data.title}</h1>
+      <div class="article__meta label">
+        <time datetime={note.data.pubDate.toISOString()}>{dateStr}</time>
+        <span class="article__sep">·</span>
+        <span>{readingTime} min read</span>
+      </div>
+    </header>
+    <OrnamentalDivider variant="rule" />
+    <div class="article__body prose drop-cap">
+      <Content />
+    </div>
+    <OrnamentalDivider variant="floral" />
+    <footer class="article__footer">
+      <a href="/notes/" class="btn btn--alt">← Back to Notes</a>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .article { padding: var(--sp-2xl) 0; max-width: var(--max-width-content); }
+  .article__header { text-align: center; margin-bottom: var(--sp-md); }
+  .article__title { font-size: var(--fs-4xl); margin: var(--sp-sm) 0 var(--sp-md); line-height: 1.15; }
+  .article__meta { display: flex; justify-content: center; gap: var(--sp-sm); flex-wrap: wrap; }
+  .article__sep { color: var(--text-muted); }
+  .article__footer { text-align: center; padding-top: var(--sp-xl); }
+  @media (max-width: 600px) { .article__title { font-size: var(--fs-2xl); } }
+</style>

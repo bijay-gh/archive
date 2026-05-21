@@ -1,0 +1,70 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.filter(p => !p.data.draft).map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const wordCount = post.body ? post.body.split(/\s+/).length : 0;
+const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+const dateStr = post.data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<Layout title={post.data.title} description={post.data.description} ogType="article">
+  <article class="article container">
+    <header class="article__header">
+      <span class="category-label">Blog Post</span>
+      <h1 class="article__title">{post.data.title}</h1>
+      <div class="article__meta label">
+        <time datetime={post.data.pubDate.toISOString()}>{dateStr}</time>
+        <span class="article__sep">·</span>
+        <span>{post.data.author}</span>
+        <span class="article__sep">·</span>
+        <span>{readingTime} min read</span>
+      </div>
+      {post.data.tags.length > 0 && (
+        <div class="article__tags">
+          {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
+        </div>
+      )}
+    </header>
+
+    <OrnamentalDivider variant="diamond" />
+
+    <div class="article__body prose drop-cap">
+      <Content />
+    </div>
+
+    <OrnamentalDivider variant="floral" />
+
+    <footer class="article__footer">
+      <a href="/blog/" class="btn">← Back to Archives</a>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .article { padding: var(--sp-2xl) 0; max-width: var(--max-width-content); }
+  .article__header { text-align: center; margin-bottom: var(--sp-md); }
+  .article__title { font-size: var(--fs-4xl); margin: var(--sp-sm) 0 var(--sp-md); line-height: 1.15; }
+  .article__meta { display: flex; justify-content: center; gap: var(--sp-sm); flex-wrap: wrap; margin-bottom: var(--sp-md); }
+  .article__sep { color: var(--text-muted); }
+  .article__tags { display: flex; justify-content: center; gap: var(--sp-xs); flex-wrap: wrap; }
+  .article__footer { text-align: center; padding-top: var(--sp-xl); }
+
+  @media (max-width: 600px) {
+    .article__title { font-size: var(--fs-2xl); }
+  }
+</style>

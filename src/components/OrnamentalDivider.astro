@@ -1,0 +1,61 @@
+---
+interface Props {
+  variant?: 'floral' | 'diamond' | 'stars' | 'rule' | 'section';
+}
+
+const { variant = 'floral' } = Astro.props;
+
+const symbols: Record<string, string> = {
+  floral: '❦',
+  diamond: '◆',
+  stars: '✦  ✦  ✦',
+  rule: '— § —',
+  section: '◆  ◆  ◆',
+};
+---
+
+<div class:list={['ornament', `ornament--${variant}`]} role="separator" aria-hidden="true">
+  <span class="ornament__symbol">{symbols[variant]}</span>
+</div>
+
+<style>
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-md);
+    margin: var(--sp-2xl) 0;
+    user-select: none;
+  }
+
+  .ornament::before,
+  .ornament::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .ornament__symbol {
+    font-size: var(--fs-lg);
+    color: var(--text-muted);
+    line-height: 1;
+    letter-spacing: 0.2em;
+  }
+
+  .ornament--rule .ornament__symbol {
+    font-family: var(--font-heading);
+    font-size: var(--fs-sm);
+    letter-spacing: 0.3em;
+  }
+
+  .ornament--section::before,
+  .ornament--section::after {
+    height: 0;
+    border-top: 3px double var(--border);
+  }
+
+  .ornament--diamond .ornament__symbol {
+    font-size: var(--fs-sm);
+  }
+</style>

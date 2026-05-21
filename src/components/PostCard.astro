@@ -1,0 +1,133 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  href: string;
+  tags?: string[];
+  variant?: 'default' | 'hero' | 'compact';
+}
+
+const { title, description, pubDate, href, tags = [], variant = 'default' } = Astro.props;
+
+const dateStr = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<article class:list={['post-card', `post-card--${variant}`]}>
+  <a href={href} class="post-card__link">
+    {variant === 'hero' ? (
+      <h2 class="post-card__title post-card__title--hero">{title}</h2>
+    ) : variant === 'compact' ? (
+      <h4 class="post-card__title post-card__title--compact">{title}</h4>
+    ) : (
+      <h3 class="post-card__title">{title}</h3>
+    )}
+  </a>
+
+  <time class="post-card__date label" datetime={pubDate.toISOString()}>
+    {dateStr}
+  </time>
+
+  {variant !== 'compact' && (
+    <p class="post-card__desc">{description}</p>
+  )}
+
+  {tags.length > 0 && variant !== 'compact' && (
+    <div class="post-card__tags">
+      {tags.map(tag => (
+        <span class="tag">{tag}</span>
+      ))}
+    </div>
+  )}
+</article>
+
+<style>
+  .post-card {
+    padding: var(--sp-lg) 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-card:last-child {
+    border-bottom: none;
+  }
+
+  .post-card__link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .post-card__link:hover .post-card__title {
+    color: var(--accent);
+  }
+
+  .post-card__title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 var(--sp-xs);
+    transition: color var(--transition-fast);
+  }
+
+  .post-card__title--hero {
+    font-size: var(--fs-3xl);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .post-card__title--compact {
+    font-size: var(--fs-base);
+    margin-bottom: var(--sp-xs);
+  }
+
+  .post-card__date {
+    display: block;
+    margin-bottom: var(--sp-sm);
+  }
+
+  .post-card__desc {
+    font-size: var(--fs-base);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 var(--sp-sm);
+  }
+
+  .post-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-xs);
+  }
+
+  /* Hero variant */
+  .post-card--hero {
+    padding: var(--sp-2xl) 0;
+    border-bottom: 3px double var(--border-dark);
+    text-align: center;
+  }
+
+  .post-card--hero .post-card__date {
+    margin-bottom: var(--sp-md);
+  }
+
+  .post-card--hero .post-card__desc {
+    max-width: 36rem;
+    margin: 0 auto var(--sp-md);
+    font-size: var(--fs-lg);
+  }
+
+  .post-card--hero .post-card__tags {
+    justify-content: center;
+  }
+
+  /* Compact variant */
+  .post-card--compact {
+    padding: var(--sp-sm) 0;
+  }
+
+  .post-card--compact .post-card__date {
+    font-size: 0.65rem;
+    margin-bottom: 0;
+  }
+</style>

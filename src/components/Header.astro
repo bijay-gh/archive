@@ -1,0 +1,239 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+
+const today = new Date();
+const dateStr = today.toLocaleDateString("en-US", {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/blog/", label: "Blog" },
+  { href: "/notes/", label: "Notes" },
+  { href: "/reports/", label: "Reports" },
+  { href: "/projects/", label: "Projects" },
+  { href: "/about/", label: "About" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="masthead">
+  <div class="masthead__inner container">
+    <div class="masthead__rule masthead__rule--top"></div>
+
+    <div class="masthead__dateline">
+      <span class="masthead__date">{dateStr}</span>
+      <ThemeToggle />
+    </div>
+
+    <a href="/" class="masthead__title-link">
+      <h1 class="masthead__title">The Chronicle</h1>
+    </a>
+    <p class="masthead__tagline">
+      A Personal Repository of Knowledge & Inquiry
+    </p>
+
+    <div class="masthead__rule masthead__rule--bottom"></div>
+
+    <nav class="masthead__nav" aria-label="Main navigation">
+      <input
+        type="checkbox"
+        id="nav-toggle"
+        class="nav-toggle-checkbox"
+        aria-hidden="true"
+      />
+      <label
+        for="nav-toggle"
+        class="nav-toggle-label"
+        aria-label="Toggle navigation menu"
+      >
+        <span></span><span></span><span></span>
+      </label>
+      <ul class="masthead__nav-list">
+        {
+          navLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class:list={[
+                  "masthead__nav-link",
+                  { active: currentPath === link.href },
+                ]}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="masthead__rule masthead__rule--nav"></div>
+  </div>
+</header>
+
+<style>
+  .masthead {
+    padding-top: var(--sp-lg);
+  }
+
+  .masthead__inner {
+    text-align: center;
+  }
+
+  .masthead__rule--top {
+    border-top: 2px solid var(--text-primary);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .masthead__rule--bottom {
+    border-top: 3px double var(--border-dark);
+    margin-top: var(--sp-sm);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .masthead__rule--nav {
+    border-top: 1px solid var(--border);
+    margin-top: var(--sp-sm);
+  }
+
+  .masthead__dateline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--sp-sm);
+  }
+
+  .masthead__date {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .masthead__title-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .masthead__title-link:hover {
+    color: inherit;
+  }
+
+  .masthead__title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 6vw, var(--fs-5xl));
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .masthead__tagline {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: var(--sp-xs) 0 0;
+  }
+
+  /* ── Navigation ── */
+  .nav-toggle-checkbox {
+    display: none;
+  }
+
+  .nav-toggle-label {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    padding: var(--sp-sm);
+    margin: 0 auto;
+  }
+
+  .nav-toggle-label span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: all var(--transition-fast);
+  }
+
+  .masthead__nav-list {
+    display: flex;
+    justify-content: center;
+    gap: var(--sp-xs);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+  }
+
+  .masthead__nav-list li:not(:last-child)::after {
+    content: "·";
+    color: var(--text-muted);
+    margin-left: var(--sp-xs);
+    font-size: var(--fs-lg);
+  }
+
+  .masthead__nav-link {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: var(--sp-xs) var(--sp-sm);
+    transition: color var(--transition-fast);
+  }
+
+  .masthead__nav-link:hover,
+  .masthead__nav-link.active {
+    color: var(--accent);
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 700px) {
+    .nav-toggle-label {
+      display: flex;
+    }
+
+    .masthead__nav-list {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      padding: var(--sp-sm) 0;
+    }
+
+    .masthead__nav-list li:not(:last-child)::after {
+      content: none;
+    }
+
+    .masthead__nav-link {
+      display: block;
+      padding: var(--sp-sm);
+    }
+
+    .nav-toggle-checkbox:checked ~ .masthead__nav-list {
+      display: flex;
+    }
+
+    .nav-toggle-checkbox:checked ~ .nav-toggle-label span:nth-child(1) {
+      transform: rotate(45deg) translate(4px, 4px);
+    }
+    .nav-toggle-checkbox:checked ~ .nav-toggle-label span:nth-child(2) {
+      opacity: 0;
+    }
+    .nav-toggle-checkbox:checked ~ .nav-toggle-label span:nth-child(3) {
+      transform: rotate(-45deg) translate(4px, -4px);
+    }
+  }
+</style>

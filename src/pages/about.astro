@@ -1,0 +1,141 @@
+---
+import Layout from '../layouts/Layout.astro';
+import OrnamentalDivider from '../components/OrnamentalDivider.astro';
+---
+
+<Layout title="About the Author" description="Learn about the person behind The Chronicle — background, interests, and the purpose of this publication.">
+  <div class="container">
+    <article class="about">
+
+      <header class="about__header">
+        <div class="about__bookplate">
+          <div class="about__bookplate-inner">
+            <span class="about__bookplate-label label">Ex Libris</span>
+            <h1 class="about__title">About the Author</h1>
+            <OrnamentalDivider variant="diamond" />
+          </div>
+        </div>
+      </header>
+
+      <div class="about__content prose">
+        <p class="drop-cap">
+          Welcome, reader. This publication serves as a personal repository — part commonplace book,
+          part broadsheet, part laboratory notebook. Here you will find essays, study notes, reports,
+          and documentation of ongoing projects, all gathered under a single roof and presented with
+          the care they deserve.
+        </p>
+
+        <h2>The Purpose</h2>
+
+        <p>
+          In an age of ephemeral content and algorithmic feeds, this site is an intentional act of
+          slowness. Every piece published here is written to endure — to be read and re-read, to
+          accumulate meaning over time. The vintage aesthetic is not mere decoration; it is a
+          statement of values. Substance over spectacle. Depth over velocity.
+        </p>
+
+        <blockquote>
+          <p>
+            "A commonplace book is what a provident poet cannot subsist without, for this proverbial
+            reason, that great wits have short memories."
+          </p>
+          <footer>— Jonathan Swift</footer>
+        </blockquote>
+
+        <h2>What You'll Find</h2>
+
+        <p>The Chronicle is organized into four sections:</p>
+
+        <ul>
+          <li><strong>Blog Posts</strong> — personal essays, reflections, and longform writing on topics that spark curiosity</li>
+          <li><strong>Study Notes</strong> — structured notes from courses, books, and self-directed learning</li>
+          <li><strong>Reports</strong> — in-depth analyses and research on specific subjects</li>
+          <li><strong>Projects</strong> — documentation of ongoing and completed work</li>
+        </ul>
+
+        <h2>The Craft</h2>
+
+        <p>
+          This site is built with <a href="https://astro.build">Astro</a>, typeset in
+          <em>Playfair Display</em> and <em>EB Garamond</em>, and deployed as static HTML — the most
+          durable format on the web. No tracking scripts. No cookie banners. No algorithms deciding
+          what you should read next. Just words on a page, as it ought to be.
+        </p>
+
+        <OrnamentalDivider variant="stars" />
+
+        <h2>Get in Touch</h2>
+
+        <p>
+          Correspondence is welcome. You may reach the author by electronic mail or through the
+          usual channels. For updates, subscribe to the <a href="/rss.xml">RSS feed</a> — a
+          technology as reliable as the morning post.
+        </p>
+      </div>
+
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .about {
+    padding: var(--sp-2xl) 0;
+  }
+
+  .about__header {
+    text-align: center;
+    margin-bottom: var(--sp-2xl);
+  }
+
+  .about__bookplate {
+    display: inline-block;
+    padding: var(--sp-2xl) var(--sp-3xl);
+    border: 3px double var(--border-dark);
+    position: relative;
+  }
+
+  .about__bookplate::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--border);
+    pointer-events: none;
+  }
+
+  .about__bookplate-inner {
+    text-align: center;
+  }
+
+  .about__bookplate-label {
+    display: block;
+    margin-bottom: var(--sp-sm);
+    color: var(--accent);
+    letter-spacing: 0.25em;
+  }
+
+  .about__title {
+    font-size: var(--fs-3xl);
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .about__content {
+    padding-top: var(--sp-xl);
+  }
+
+  .about__content blockquote footer {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    font-style: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: var(--sp-sm);
+  }
+
+  @media (max-width: 600px) {
+    .about__bookplate {
+      padding: var(--sp-lg) var(--sp-xl);
+    }
+  }
+</style>

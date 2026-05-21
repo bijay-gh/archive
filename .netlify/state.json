@@ -15,5 +15,6 @@
 			"longitude": 85.3251
 		},
 		"timestamp": 1779341144421
-	}
+	},
+	"dbConnectionString": "postgres://localhost:58163/postgres"
 }

@@ -1,78 +1,105 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import PostCard from '../components/PostCard.astro';
-import OrnamentalDivider from '../components/OrnamentalDivider.astro';
-import { getCollection } from 'astro:content';
+import Layout from "../layouts/Layout.astro";
+import PostCard from "../components/PostCard.astro";
+import OrnamentalDivider from "../components/OrnamentalDivider.astro";
+import { getCollection } from "astro:content";
 
-const allPosts = (await getCollection('posts'))
-  .filter(p => !p.data.draft)
+const allPosts = (await getCollection("posts"))
+  .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 // Collect all unique tags
-const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))].sort();
+const allTags = [...new Set(allPosts.flatMap((p) => p.data.tags))].sort();
 ---
 
-<Layout title="The Archives" description="A complete archive of all blog posts and writings." compactHeader={true}>
+<Layout
+  title="Random Stuff"
+  description="A complete archive of all blog posts and writings."
+  compactHeader={true}
+>
   <div class="container">
-
     <header class="archive-header">
-      <h1 class="archive-header__title">The Archives</h1>
-      <p class="archive-header__sub">A complete record of dispatches, essays, and writings.</p>
+      <h1 class="archive-header__title">Random Stuff</h1>
+      <p class="archive-header__sub">
+        A complete record of dispatches, essays, and musings.
+      </p>
       <OrnamentalDivider variant="diamond" />
     </header>
 
     <!-- Tag Filter -->
-    {allTags.length > 0 && (
-      <nav class="tag-filter" aria-label="Filter by tag">
-        <span class="tag-filter__label label">Filter by topic:</span>
-        <div class="tag-filter__tags">
-          <button class="tag tag--active" data-filter="all" onclick="filterPosts('all')">All</button>
-          {allTags.map(tag => (
-            <button class="tag" data-filter={tag} onclick={`filterPosts('${tag}')`}>{tag}</button>
-          ))}
-        </div>
-      </nav>
-    )}
+    {
+      allTags.length > 0 && (
+        <nav class="tag-filter" aria-label="Filter by tag">
+          <span class="tag-filter__label label">Filter by topic:</span>
+          <div class="tag-filter__tags">
+            <button
+              class="tag tag--active"
+              data-filter="all"
+              onclick="filterPosts('all')"
+            >
+              All
+            </button>
+            {allTags.map((tag) => (
+              <button
+                class="tag"
+                data-filter={tag}
+                onclick={`filterPosts('${tag}')`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </nav>
+      )
+    }
 
     <!-- Posts List -->
     <section class="archive-list" aria-label="Blog posts">
-      {allPosts.map(post => (
-        <div class="archive-item" data-tags={post.data.tags.join(',')}>
-          <PostCard
-            title={post.data.title}
-            description={post.data.description}
-            pubDate={post.data.pubDate}
-            href={`/posts/${post.id}/`}
-            tags={post.data.tags}
-          />
-        </div>
-      ))}
+      {
+        allPosts.map((post) => (
+          <div class="archive-item" data-tags={post.data.tags.join(",")}>
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              href={`/posts/${post.id}/`}
+              tags={post.data.tags}
+              format={post.data.format}
+              media={post.data.media}
+            />
+          </div>
+        ))
+      }
     </section>
 
-    {allPosts.length === 0 && (
-      <p class="archive-empty">No posts published yet. Check back soon.</p>
-    )}
+    {
+      allPosts.length === 0 && (
+        <p class="archive-empty">No posts published yet. Check back soon.</p>
+      )
+    }
 
     <OrnamentalDivider variant="floral" />
-
   </div>
 </Layout>
 
 <script is:inline>
   function filterPosts(tag) {
-    const items = document.querySelectorAll('.archive-item');
-    const buttons = document.querySelectorAll('.tag-filter__tags .tag');
+    const items = document.querySelectorAll(".archive-item");
+    const buttons = document.querySelectorAll(".tag-filter__tags .tag");
 
-    buttons.forEach(btn => {
-      btn.classList.toggle('tag--active', btn.getAttribute('data-filter') === tag);
+    buttons.forEach((btn) => {
+      btn.classList.toggle(
+        "tag--active",
+        btn.getAttribute("data-filter") === tag
+      );
     });
 
-    items.forEach(item => {
-      if (tag === 'all') {
-        item.style.display = '';
+    items.forEach((item) => {
+      if (tag === "all") {
+        item.style.display = "";
       } else {
-        const tags = item.getAttribute('data-tags') || '';
-        item.style.display = tags.split(',').includes(tag) ? '' : 'none';
+        const tags = item.getAttribute("data-tags") || "";
+        item.style.display = tags.split(",").includes(tag) ? "" : "none";
       }
     });
   }
@@ -81,7 +108,7 @@ const allTags = [...new Set(allPosts.flatMap(p => p.data.tags))].sort();
 <style>
   .archive-header {
     text-align: center;
-    padding-top: var(--sp-2xl);
+    padding-top: var(--sp-md);
   }
 
   .archive-header__title {

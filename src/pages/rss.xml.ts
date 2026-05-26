@@ -37,7 +37,7 @@ export async function GET(context: APIContext) {
   ].sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
 
   return rss({
-    title: 'The Chronicle',
+    title: 'The Archive',
     description: 'A personal repository of knowledge & inquiry.',
     site: context.site!,
     items: allItems,

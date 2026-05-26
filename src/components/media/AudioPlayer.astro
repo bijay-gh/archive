@@ -1,0 +1,106 @@
+---
+interface Props {
+  src?: string;
+  url?: string;
+  caption?: string;
+}
+
+const { src, url, caption } = Astro.props;
+const target = url || src || '';
+---
+
+<figure class="media-audio">
+  <div class="audio-player" data-audio-src={target}>
+    <button class="audio-player__btn" type="button" aria-label="Play">
+      <svg class="audio-player__icon audio-player__icon--play" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><polygon points="6,3 20,12 6,21"></polygon></svg>
+      <svg class="audio-player__icon audio-player__icon--pause" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style="display:none"><rect x="5" y="3" width="4" height="18"></rect><rect x="15" y="3" width="4" height="18"></rect></svg>
+    </button>
+    <div class="audio-player__track">
+      <div class="audio-player__progress">
+        <div class="audio-player__progress-bar"></div>
+      </div>
+    </div>
+    <span class="audio-player__time">0:00 / 0:00</span>
+    <audio preload="metadata" src={target}></audio>
+  </div>
+  {caption && <figcaption class="media-caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .media-audio {
+    margin: var(--sp-xl) 0;
+  }
+
+  .audio-player {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-sm);
+    padding: var(--sp-md) var(--sp-lg);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    font-family: var(--font-label);
+  }
+
+  .audio-player__btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .audio-player__btn:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+  }
+
+  .audio-player__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .audio-player__track {
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .audio-player__progress {
+    height: 4px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .audio-player__progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 100ms linear;
+  }
+
+  .audio-player__time {
+    flex-shrink: 0;
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    min-width: 7em;
+    text-align: right;
+  }
+
+  .media-caption {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: var(--sp-sm);
+    letter-spacing: 0.04em;
+    font-style: italic;
+  }
+</style>

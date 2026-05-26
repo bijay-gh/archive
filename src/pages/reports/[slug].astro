@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
 import { getCollection, render } from 'astro:content';
+import { getFilePath, parseDocx, parseTex } from '../../utils/fileParser';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports');
@@ -12,9 +13,21 @@ export async function getStaticPaths() {
 }
 
 const { report } = Astro.props;
-const { Content } = await render(report);
+const format = report.data.format || 'md';
 
-const wordCount = report.body ? report.body.split(/\s+/).length : 0;
+let Content;
+let htmlContent = '';
+
+if (format === 'md') {
+  const rendered = await render(report);
+  Content = rendered.Content;
+} else if (format === 'docx' && report.data.file) {
+  htmlContent = await parseDocx(getFilePath('reports', report.data.file));
+} else if (format === 'tex' && report.data.file) {
+  htmlContent = parseTex(getFilePath('reports', report.data.file));
+}
+
+const wordCount = report.body ? report.body.split(/\s+/).length : (htmlContent ? htmlContent.replace(/<[^>]*>?/gm, '').split(/\s+/).length : 0);
 const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
 const dateStr = report.data.pubDate.toLocaleDateString('en-US', {
@@ -37,7 +50,12 @@ const dateStr = report.data.pubDate.toLocaleDateString('en-US', {
     </header>
     <OrnamentalDivider variant="section" />
     <div class="article__body prose drop-cap">
-      <Content />
+      {format === 'md' && Content && <Content />}
+      {format === 'docx' && <div set:html={htmlContent} />}
+      {format === 'tex' && <div set:html={htmlContent} />}
+      {format === 'pdf' && report.data.file && (
+        <iframe src={`/assets/reports/${report.data.file}`} class="pdf-viewer" title={report.data.title}></iframe>
+      )}
     </div>
     <OrnamentalDivider variant="floral" />
     <footer class="article__footer">
@@ -54,4 +72,5 @@ const dateStr = report.data.pubDate.toLocaleDateString('en-US', {
   .article__sep { color: var(--text-muted); }
   .article__footer { text-align: center; padding-top: var(--sp-xl); }
   @media (max-width: 600px) { .article__title { font-size: var(--fs-2xl); } }
+  .pdf-viewer { width: 100%; height: 80vh; border: 1px solid var(--border); border-radius: 4px; }
 </style>

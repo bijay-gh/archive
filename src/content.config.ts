@@ -2,8 +2,10 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const posts = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts' }),
+  loader: glob({ pattern: '**/*.{md,mdx,json}', base: './src/content/posts' }),
   schema: z.object({
+    format: z.enum(['md', 'pdf', 'docx', 'tex']).default('md'),
+    file: z.string().optional(),
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
@@ -12,12 +14,19 @@ const posts = defineCollection({
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    media: z.object({
+      hasVideo: z.boolean().default(false),
+      hasAudio: z.boolean().default(false),
+      hasImages: z.boolean().default(false),
+    }).optional(),
   }),
 });
 
 const notes = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/notes' }),
+  loader: glob({ pattern: '**/*.{md,mdx,json}', base: './src/content/notes' }),
   schema: z.object({
+    format: z.enum(['md', 'pdf', 'docx', 'tex']).default('md'),
+    file: z.string().optional(),
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
@@ -25,12 +34,19 @@ const notes = defineCollection({
     subject: z.string().default('General'),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    media: z.object({
+      hasVideo: z.boolean().default(false),
+      hasAudio: z.boolean().default(false),
+      hasImages: z.boolean().default(false),
+    }).optional(),
   }),
 });
 
 const reports = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/reports' }),
+  loader: glob({ pattern: '**/*.{md,mdx,json}', base: './src/content/reports' }),
   schema: z.object({
+    format: z.enum(['md', 'pdf', 'docx', 'tex']).default('md'),
+    file: z.string().optional(),
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
@@ -39,12 +55,19 @@ const reports = defineCollection({
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    media: z.object({
+      hasVideo: z.boolean().default(false),
+      hasAudio: z.boolean().default(false),
+      hasImages: z.boolean().default(false),
+    }).optional(),
   }),
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
+  loader: glob({ pattern: '**/*.{md,mdx,json}', base: './src/content/projects' }),
   schema: z.object({
+    format: z.enum(['md', 'pdf', 'docx', 'tex']).default('md'),
+    file: z.string().optional(),
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
@@ -53,6 +76,11 @@ const projects = defineCollection({
     tags: z.array(z.string()).default([]),
     url: z.string().url().optional(),
     draft: z.boolean().default(false),
+    media: z.object({
+      hasVideo: z.boolean().default(false),
+      hasAudio: z.boolean().default(false),
+      hasImages: z.boolean().default(false),
+    }).optional(),
   }),
 });
 

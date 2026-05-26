@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
 import { getCollection, render } from 'astro:content';
+import { getFilePath, parseDocx, parseTex } from '../../utils/fileParser';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -12,9 +13,21 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { Content } = await render(project);
+const format = project.data.format || 'md';
 
-const wordCount = project.body ? project.body.split(/\s+/).length : 0;
+let Content;
+let htmlContent = '';
+
+if (format === 'md') {
+  const rendered = await render(project);
+  Content = rendered.Content;
+} else if (format === 'docx' && project.data.file) {
+  htmlContent = await parseDocx(getFilePath('projects', project.data.file));
+} else if (format === 'tex' && project.data.file) {
+  htmlContent = parseTex(getFilePath('projects', project.data.file));
+}
+
+const wordCount = project.body ? project.body.split(/\s+/).length : (htmlContent ? htmlContent.replace(/<[^>]*>?/gm, '').split(/\s+/).length : 0);
 const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
 const dateStr = project.data.pubDate.toLocaleDateString('en-US', {
@@ -45,7 +58,12 @@ const statusLabel = project.data.status.replace('-', ' ');
     </header>
     <OrnamentalDivider variant="stars" />
     <div class="article__body prose drop-cap">
-      <Content />
+      {format === 'md' && Content && <Content />}
+      {format === 'docx' && <div set:html={htmlContent} />}
+      {format === 'tex' && <div set:html={htmlContent} />}
+      {format === 'pdf' && project.data.file && (
+        <iframe src={`/assets/projects/${project.data.file}`} class="pdf-viewer" title={project.data.title}></iframe>
+      )}
     </div>
     <OrnamentalDivider variant="floral" />
     <footer class="article__footer">
@@ -76,4 +94,5 @@ const statusLabel = project.data.status.replace('-', ' ');
   .status-badge--archived { border-color: var(--text-muted); color: var(--text-muted); }
   .project-link { margin-top: var(--sp-sm); }
   @media (max-width: 600px) { .article__title { font-size: var(--fs-2xl); } }
+  .pdf-viewer { width: 100%; height: 80vh; border: 1px solid var(--border); border-radius: 4px; }
 </style>

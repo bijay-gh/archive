@@ -6,9 +6,15 @@ interface Props {
   href: string;
   tags?: string[];
   variant?: 'default' | 'hero' | 'compact';
+  format?: 'md' | 'pdf' | 'docx' | 'tex';
+  media?: {
+    hasVideo?: boolean;
+    hasAudio?: boolean;
+    hasImages?: boolean;
+  };
 }
 
-const { title, description, pubDate, href, tags = [], variant = 'default' } = Astro.props;
+const { title, description, pubDate, href, tags = [], variant = 'default', format = 'md', media } = Astro.props;
 
 const dateStr = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -29,6 +35,10 @@ const dateStr = pubDate.toLocaleDateString('en-US', {
   </a>
 
   <time class="post-card__date label" datetime={pubDate.toISOString()}>
+    {format !== 'md' && <span class="format-badge format-badge--{format}">{format.toUpperCase()}</span>}
+    {media?.hasVideo && <span class="media-icon" title="Contains video">🎥</span>}
+    {media?.hasAudio && <span class="media-icon" title="Contains audio">🎵</span>}
+    {media?.hasImages && <span class="media-icon" title="Contains images">🖼️</span>}
     {dateStr}
   </time>
 
@@ -129,5 +139,22 @@ const dateStr = pubDate.toLocaleDateString('en-US', {
   .post-card--compact .post-card__date {
     font-size: 0.65rem;
     margin-bottom: 0;
+  }
+
+  .format-badge {
+    display: inline-block;
+    padding: 0.1em 0.4em;
+    margin-right: var(--sp-xs);
+    border: 1px solid var(--text-muted);
+    border-radius: 2px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: var(--text-muted);
+  }
+
+  .media-icon {
+    font-size: 0.9em;
+    margin-right: 4px;
+    vertical-align: middle;
   }
 </style>

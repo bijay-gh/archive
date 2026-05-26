@@ -28,6 +28,8 @@ const allProjects = (await getCollection('projects'))
             pubDate={project.data.pubDate}
             href={`/projects/${project.id}/`}
             tags={project.data.tags}
+            format={project.data.format}
+            media={project.data.media}
           />
         </div>
       ))}
@@ -38,7 +40,7 @@ const allProjects = (await getCollection('projects'))
 </Layout>
 
 <style>
-  .page-header { text-align: center; padding-top: var(--sp-2xl); }
+  .page-header { text-align: center; padding-top: var(--sp-md); }
   .page-header__title { font-size: var(--fs-4xl); margin-bottom: var(--sp-sm); }
   .page-header__sub { font-size: var(--fs-lg); color: var(--text-muted); font-style: italic; margin: 0; }
   .archive-list { max-width: var(--max-width-content); margin: 0 auto; }

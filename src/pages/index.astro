@@ -33,7 +33,7 @@ const recentReports = [...allReports, ...allProjects]
 ---
 
 <Layout
-  title="The Chronicle"
+  title="The Archive"
   description="A personal journal of exploration and research."
 >
   <div class="container">
@@ -53,6 +53,8 @@ const recentReports = [...allReports, ...allProjects]
             href={`/posts/${featured.id}/`}
             tags={featured.data.tags}
             variant="hero"
+            format={featured.data.format}
+            media={featured.data.media}
           />
         </section>
       )
@@ -75,6 +77,8 @@ const recentReports = [...allReports, ...allProjects]
                 pubDate={post.data.pubDate}
                 href={`/posts/${post.id}/`}
                 variant="compact"
+                format={post.data.format}
+                media={post.data.media}
               />
             ))
           ) : (
@@ -99,6 +103,8 @@ const recentReports = [...allReports, ...allProjects]
                 pubDate={note.data.pubDate}
                 href={`/notes/${note.id}/`}
                 variant="compact"
+                format={note.data.format}
+                media={note.data.media}
               />
             ))
           ) : (
@@ -128,6 +134,8 @@ const recentReports = [...allReports, ...allProjects]
                   pubDate={item.data.pubDate}
                   href={href}
                   variant="compact"
+                  format={item.data.format}
+                  media={item.data.media}
                 />
               );
             })

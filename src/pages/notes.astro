@@ -43,6 +43,8 @@ const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
             pubDate={note.data.pubDate}
             href={`/notes/${note.id}/`}
             tags={note.data.tags}
+            format={note.data.format}
+            media={note.data.media}
           />
         </div>
       ))}
@@ -59,7 +61,7 @@ const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
 <style>
   .page-header {
     text-align: center;
-    padding-top: var(--sp-2xl);
+    padding-top: var(--sp-md);
   }
 
   .page-header__title {

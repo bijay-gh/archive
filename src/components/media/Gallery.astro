@@ -1,0 +1,73 @@
+---
+interface Props {
+  images: string;
+  captions?: string;
+}
+
+const { images: imagesRaw, captions: captionsRaw } = Astro.props;
+const images = imagesRaw.split(',').map(s => s.trim()).filter(Boolean);
+const captions = (captionsRaw || '').split(',').map(s => s.trim());
+---
+
+<div class="media-gallery">
+  {images.map((src, i) => (
+    <figure class="media-gallery__item">
+      <img
+        src={src}
+        alt={captions[i] || `Gallery image ${i + 1}`}
+        loading="lazy"
+        decoding="async"
+        data-lightbox="true"
+        data-lightbox-group="gallery"
+        class="media-gallery__img"
+      />
+      {captions[i] && <figcaption class="media-caption">{captions[i]}</figcaption>}
+    </figure>
+  ))}
+</div>
+
+<style>
+  .media-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--sp-md);
+    margin: var(--sp-xl) 0;
+  }
+
+  .media-gallery__item {
+    margin: 0;
+  }
+
+  .media-gallery__img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    cursor: zoom-in;
+    transition: opacity var(--transition-fast);
+  }
+
+  .media-gallery__img:hover {
+    opacity: 0.88;
+  }
+
+  .media-caption {
+    font-family: var(--font-label);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: var(--sp-xs);
+    letter-spacing: 0.04em;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    .media-gallery {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--sp-sm);
+    }
+    .media-gallery__img {
+      height: 140px;
+    }
+  }
+</style>

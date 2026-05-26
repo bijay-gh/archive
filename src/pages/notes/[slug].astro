@@ -18,10 +18,14 @@ const format = note.data.format || 'md';
 let Content;
 let htmlContent = '';
 
-if (format === 'md') {
+try {
   const rendered = await render(note);
-  Content = rendered.Content;
-} else if (format === 'docx' && note.data.file) {
+  Content = rendered?.Content;
+} catch (e) {
+  // If it's a JSON file, render might fail, which is fine.
+}
+
+if (format === 'docx' && note.data.file) {
   htmlContent = await parseDocx(getFilePath('notes', note.data.file));
 } else if (format === 'tex' && note.data.file) {
   htmlContent = parseTex(getFilePath('notes', note.data.file));
@@ -48,7 +52,7 @@ const dateStr = note.data.pubDate.toLocaleDateString('en-US', {
     </header>
     <OrnamentalDivider variant="rule" />
     <div class="article__body prose drop-cap">
-      {format === 'md' && Content && <Content />}
+      {Content && <Content />}
       {format === 'docx' && <div set:html={htmlContent} />}
       {format === 'tex' && <div set:html={htmlContent} />}
       {format === 'pdf' && note.data.file && (

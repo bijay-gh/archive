@@ -18,10 +18,14 @@ const format = post.data.format || 'md';
 let Content;
 let htmlContent = '';
 
-if (format === 'md') {
+try {
   const rendered = await render(post);
-  Content = rendered.Content;
-} else if (format === 'docx' && post.data.file) {
+  Content = rendered?.Content;
+} catch (e) {
+  // If it's a JSON file, render might fail, which is fine.
+}
+
+if (format === 'docx' && post.data.file) {
   htmlContent = await parseDocx(getFilePath('posts', post.data.file));
 } else if (format === 'tex' && post.data.file) {
   htmlContent = parseTex(getFilePath('posts', post.data.file));
@@ -57,7 +61,7 @@ const dateStr = post.data.pubDate.toLocaleDateString('en-US', {
     <OrnamentalDivider variant="diamond" />
 
     <div class="article__body prose drop-cap">
-      {format === 'md' && Content && <Content />}
+      {Content && <Content />}
       {format === 'docx' && <div set:html={htmlContent} />}
       {format === 'tex' && <div set:html={htmlContent} />}
       {format === 'pdf' && post.data.file && (

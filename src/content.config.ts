@@ -14,6 +14,10 @@ const posts = defineCollection({
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    toc: z.boolean().default(false),
+    toc_depth: z.number().default(3),
+    listed: z.boolean().default(true),
+    parent: z.string().optional(),
     media: z.object({
       hasVideo: z.boolean().default(false),
       hasAudio: z.boolean().default(false),
@@ -34,6 +38,10 @@ const notes = defineCollection({
     subject: z.string().default('General'),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    toc: z.boolean().default(false),
+    toc_depth: z.number().default(3),
+    listed: z.boolean().default(true),
+    parent: z.string().optional(),
     media: z.object({
       hasVideo: z.boolean().default(false),
       hasAudio: z.boolean().default(false),
@@ -55,6 +63,10 @@ const reports = defineCollection({
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    toc: z.boolean().default(false),
+    toc_depth: z.number().default(3),
+    listed: z.boolean().default(true),
+    parent: z.string().optional(),
     media: z.object({
       hasVideo: z.boolean().default(false),
       hasAudio: z.boolean().default(false),
@@ -76,6 +88,10 @@ const projects = defineCollection({
     tags: z.array(z.string()).default([]),
     url: z.string().url().optional(),
     draft: z.boolean().default(false),
+    toc: z.boolean().default(false),
+    toc_depth: z.number().default(3),
+    listed: z.boolean().default(true),
+    parent: z.string().optional(),
     media: z.object({
       hasVideo: z.boolean().default(false),
       hasAudio: z.boolean().default(false),

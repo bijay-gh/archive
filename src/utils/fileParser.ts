@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import mammoth from 'mammoth';
 import katex from 'katex';
+import { processLatexImageMacros } from './latexImageMacros.ts';
 
 // Base content directory
 const CONTENT_DIR = path.join(process.cwd(), 'src', 'content');
@@ -41,6 +42,19 @@ export function parseTex(filePath: string): string {
   if (documentMatch) {
     content = documentMatch[1];
   }
+
+  // Process custom image macros and standard figures
+  content = processLatexImageMacros(content);
+
+  // Convert sections to HTML headings with IDs
+  content = content.replace(/\\(section|subsection|subsubsection)\*?\{(.*?)\}/g, (match, type, title) => {
+    let level = 2;
+    if (type === 'subsection') level = 3;
+    if (type === 'subsubsection') level = 4;
+    
+    const slug = title.toLowerCase().trim().replace(/\\s+/g, '-').replace(/[^\\w\\-]+/g, '').replace(/\\-\\-+/g, '-');
+    return `<h${level} id="${slug}">${title}</h${level}>`;
+  });
 
   // Render display math: $$...$$ or \[...\]
   content = content.replace(/\$\$(.*?)\$\$/gs, (match, math) => {

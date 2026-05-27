@@ -1,15 +1,24 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import ContentLayout from '../../layouts/ContentLayout.astro';
 import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
-import { getCollection, render } from 'astro:content';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { render } from 'astro:content';
 import { getFilePath, parseDocx, parseTex } from '../../utils/fileParser';
+import { getAllContent, getParentPage } from '../../utils/contentFilter';
+import fs from 'node:fs';
 
 export async function getStaticPaths() {
-  const notes = await getCollection('notes');
-  return notes.filter(n => !n.data.draft).map(note => ({
-    params: { slug: note.id },
-    props: { note },
-  }));
+  const notes = await getAllContent('notes');
+  return notes.map(note => {
+    let slug = note.id;
+    if (note.data.parent) {
+      slug = `${note.data.parent}/${note.id}`;
+    }
+    return {
+      params: { slug },
+      props: { note },
+    };
+  });
 }
 
 const { note } = Astro.props;
@@ -37,10 +46,28 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 const dateStr = note.data.pubDate.toLocaleDateString('en-US', {
   year: 'numeric', month: 'long', day: 'numeric',
 });
+
+let breadcrumbItems = [{ label: 'Notes', url: '/notes/' }];
+if (note.data.parent) {
+  const parent = await getParentPage('notes', note.data.parent);
+  if (parent) {
+    breadcrumbItems.push({ label: parent.data.title, url: `/notes/${parent.id}` });
+  }
+}
+breadcrumbItems.push({ label: note.data.title, url: '#' });
+
 ---
 
-<Layout title={note.data.title} description={note.data.description} ogType="article" compactHeader={true}>
+<ContentLayout 
+  title={note.data.title} 
+  description={note.data.description} 
+  ogType="article" 
+  compactHeader={true}
+  toc={note.data.toc}
+>
   <article class="article container">
+    {note.data.parent && <Breadcrumb items={breadcrumbItems} />}
+    
     <header class="article__header">
       <span class="category-label category-label--forest">{note.data.subject}</span>
       <h1 class="article__title">{note.data.title}</h1>
@@ -51,7 +78,7 @@ const dateStr = note.data.pubDate.toLocaleDateString('en-US', {
       </div>
     </header>
     <OrnamentalDivider variant="rule" />
-    <div class="article__body prose drop-cap">
+    <div class="article__body prose drop-cap w-full max-w-none">
       {Content && <Content />}
       {format === 'docx' && <div set:html={htmlContent} />}
       {format === 'tex' && <div set:html={htmlContent} />}
@@ -64,10 +91,10 @@ const dateStr = note.data.pubDate.toLocaleDateString('en-US', {
       <a href="/notes/" class="btn btn--alt">← Back to Notes</a>
     </footer>
   </article>
-</Layout>
+</ContentLayout>
 
 <style>
-  .article { padding: var(--sp-2xl) 0; max-width: var(--max-width-content); }
+  .article { padding: var(--sp-xl) 0 var(--sp-2xl); width: 100%; }
   .article__header { text-align: center; margin-bottom: var(--sp-md); }
   .article__title { font-size: var(--fs-4xl); margin: var(--sp-sm) 0 var(--sp-md); line-height: 1.15; }
   .article__meta { display: flex; justify-content: center; gap: var(--sp-sm); flex-wrap: wrap; }

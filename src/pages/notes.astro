@@ -3,9 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
 import OrnamentalDivider from '../components/OrnamentalDivider.astro';
 import { getCollection } from 'astro:content';
+import { getListedContent } from '../utils/contentFilter';
 
-const allNotes = (await getCollection('notes'))
-  .filter(n => !n.data.draft)
+const allNotes = (await getListedContent('notes'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
@@ -94,7 +94,7 @@ const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
   }
 
   .archive-list {
-    max-width: var(--max-width-content);
+    max-width: 56rem;
     margin: 0 auto;
   }
 

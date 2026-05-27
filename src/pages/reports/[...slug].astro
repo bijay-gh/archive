@@ -1,15 +1,23 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import ContentLayout from '../../layouts/ContentLayout.astro';
 import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
-import { getCollection, render } from 'astro:content';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { render } from 'astro:content';
 import { getFilePath, parseDocx, parseTex } from '../../utils/fileParser';
+import { getAllContent, getParentPage } from '../../utils/contentFilter';
 
 export async function getStaticPaths() {
-  const reports = await getCollection('reports');
-  return reports.filter(r => !r.data.draft).map(report => ({
-    params: { slug: report.id },
-    props: { report },
-  }));
+  const reports = await getAllContent('reports');
+  return reports.map(report => {
+    let slug = report.id;
+    if (report.data.parent) {
+      slug = `${report.data.parent}/${report.id}`;
+    }
+    return {
+      params: { slug },
+      props: { report },
+    };
+  });
 }
 
 const { report } = Astro.props;
@@ -37,10 +45,27 @@ const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 const dateStr = report.data.pubDate.toLocaleDateString('en-US', {
   year: 'numeric', month: 'long', day: 'numeric',
 });
+
+let breadcrumbItems = [{ label: 'Reports', url: '/reports/' }];
+if (report.data.parent) {
+  const parent = await getParentPage('reports', report.data.parent);
+  if (parent) {
+    breadcrumbItems.push({ label: parent.data.title, url: `/reports/${parent.id}` });
+  }
+}
+breadcrumbItems.push({ label: report.data.title, url: '#' });
 ---
 
-<Layout title={report.data.title} description={report.data.description} ogType="article" compactHeader={true}>
+<ContentLayout 
+  title={report.data.title} 
+  description={report.data.description} 
+  ogType="article" 
+  compactHeader={true}
+  toc={report.data.toc}
+>
   <article class="article container">
+    {report.data.parent && <Breadcrumb items={breadcrumbItems} />}
+    
     <header class="article__header">
       <span class="category-label">Report</span>
       <h1 class="article__title">{report.data.title}</h1>
@@ -53,7 +78,7 @@ const dateStr = report.data.pubDate.toLocaleDateString('en-US', {
       </div>
     </header>
     <OrnamentalDivider variant="section" />
-    <div class="article__body prose drop-cap">
+    <div class="article__body prose drop-cap w-full max-w-none">
       {Content && <Content />}
       {format === 'docx' && <div set:html={htmlContent} />}
       {format === 'tex' && <div set:html={htmlContent} />}
@@ -66,10 +91,10 @@ const dateStr = report.data.pubDate.toLocaleDateString('en-US', {
       <a href="/reports/" class="btn">← Back to Reports</a>
     </footer>
   </article>
-</Layout>
+</ContentLayout>
 
 <style>
-  .article { padding: var(--sp-2xl) 0; max-width: var(--max-width-content); }
+  .article { padding: var(--sp-xl) 0 var(--sp-2xl); width: 100%; }
   .article__header { text-align: center; margin-bottom: var(--sp-md); }
   .article__title { font-size: var(--fs-4xl); margin: var(--sp-sm) 0 var(--sp-md); line-height: 1.15; }
   .article__meta { display: flex; justify-content: center; gap: var(--sp-sm); flex-wrap: wrap; }

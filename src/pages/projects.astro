@@ -3,9 +3,9 @@ import Layout from '../layouts/Layout.astro';
 import PostCard from '../components/PostCard.astro';
 import OrnamentalDivider from '../components/OrnamentalDivider.astro';
 import { getCollection } from 'astro:content';
+import { getListedContent } from '../utils/contentFilter';
 
-const allProjects = (await getCollection('projects'))
-  .filter(p => !p.data.draft)
+const allProjects = (await getListedContent('projects'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
@@ -43,7 +43,7 @@ const allProjects = (await getCollection('projects'))
   .page-header { text-align: center; padding-top: var(--sp-md); }
   .page-header__title { font-size: var(--fs-4xl); margin-bottom: var(--sp-sm); }
   .page-header__sub { font-size: var(--fs-lg); color: var(--text-muted); font-style: italic; margin: 0; }
-  .archive-list { max-width: var(--max-width-content); margin: 0 auto; }
+  .archive-list { max-width: 56rem; margin: 0 auto; }
   .project-item { position: relative; }
   .status-badge {
     display: inline-block;

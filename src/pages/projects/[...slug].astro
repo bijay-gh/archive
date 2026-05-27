@@ -1,15 +1,23 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import ContentLayout from '../../layouts/ContentLayout.astro';
 import OrnamentalDivider from '../../components/OrnamentalDivider.astro';
-import { getCollection, render } from 'astro:content';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { render } from 'astro:content';
 import { getFilePath, parseDocx, parseTex } from '../../utils/fileParser';
+import { getAllContent, getParentPage } from '../../utils/contentFilter';
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
-  return projects.filter(p => !p.data.draft).map(project => ({
-    params: { slug: project.id },
-    props: { project },
-  }));
+  const projects = await getAllContent('projects');
+  return projects.map(project => {
+    let slug = project.id;
+    if (project.data.parent) {
+      slug = `${project.data.parent}/${project.id}`;
+    }
+    return {
+      params: { slug },
+      props: { project },
+    };
+  });
 }
 
 const { project } = Astro.props;
@@ -39,10 +47,27 @@ const dateStr = project.data.pubDate.toLocaleDateString('en-US', {
 });
 
 const statusLabel = project.data.status.replace('-', ' ');
+
+let breadcrumbItems = [{ label: 'Projects', url: '/projects/' }];
+if (project.data.parent) {
+  const parent = await getParentPage('projects', project.data.parent);
+  if (parent) {
+    breadcrumbItems.push({ label: parent.data.title, url: `/projects/${parent.id}` });
+  }
+}
+breadcrumbItems.push({ label: project.data.title, url: '#' });
 ---
 
-<Layout title={project.data.title} description={project.data.description} ogType="article" compactHeader={true}>
+<ContentLayout 
+  title={project.data.title} 
+  description={project.data.description} 
+  ogType="article" 
+  compactHeader={true}
+  toc={project.data.toc}
+>
   <article class="article container">
+    {project.data.parent && <Breadcrumb items={breadcrumbItems} />}
+    
     <header class="article__header">
       <div class="article__badges">
         <span class="category-label">Project</span>
@@ -61,7 +86,7 @@ const statusLabel = project.data.status.replace('-', ' ');
       )}
     </header>
     <OrnamentalDivider variant="stars" />
-    <div class="article__body prose drop-cap">
+    <div class="article__body prose drop-cap w-full max-w-none">
       {Content && <Content />}
       {format === 'docx' && <div set:html={htmlContent} />}
       {format === 'tex' && <div set:html={htmlContent} />}
@@ -74,10 +99,10 @@ const statusLabel = project.data.status.replace('-', ' ');
       <a href="/projects/" class="btn">← Back to Projects</a>
     </footer>
   </article>
-</Layout>
+</ContentLayout>
 
 <style>
-  .article { padding: var(--sp-2xl) 0; max-width: var(--max-width-content); }
+  .article { padding: var(--sp-xl) 0 var(--sp-2xl); width: 100%; }
   .article__header { text-align: center; margin-bottom: var(--sp-md); }
   .article__badges { display: flex; justify-content: center; gap: var(--sp-sm); align-items: center; }
   .article__title { font-size: var(--fs-4xl); margin: var(--sp-sm) 0 var(--sp-md); line-height: 1.15; }

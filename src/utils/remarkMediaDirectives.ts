@@ -1,5 +1,6 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
+import { handleMdImage, handleMdClearfix } from './mdImageDirective.ts';
 
 /**
  * Detects if a URL is a YouTube video and extracts the video ID.
@@ -27,7 +28,7 @@ function getVimeoId(url: string): string | null {
 /**
  * Escapes HTML special characters for safe embedding in attributes.
  */
-function escAttr(s: string): string {
+export function escAttr(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
@@ -53,15 +54,42 @@ const remarkMediaDirectives: Plugin = () => {
       if (name === 'video') {
         handleVideo(node, attrs);
       } else if (name === 'image') {
-        handleImage(node, attrs);
+        handleMdImage(node, attrs);
       } else if (name === 'audio') {
         handleAudio(node, attrs);
       } else if (name === 'gallery') {
         handleGallery(node, attrs);
+      } else if (name === 'clearfix') {
+        handleMdClearfix(node);
+      } else if (name === 'subpage') {
+        handleSubpage(node, attrs);
       }
     });
   };
 };
+
+function handleSubpage(node: any, attrs: Record<string, string>) {
+  const slug = attrs.slug || '';
+  const label = attrs.label || 'Continue Reading';
+  
+  // Create an HTML block that mimics the SubPageLink.astro structure
+  const inner = `
+    <a href="/notes/${escAttr(slug)}" class="subpage-link block my-8 group no-underline">
+      <div class="border border-border/50 rounded-xl p-6 bg-surface/30 hover:bg-surface/60 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-between">
+        <div class="flex-1">
+          <span class="text-sm font-medium text-forest uppercase tracking-wider mb-1 block">Deep Dive</span>
+          <h3 class="text-xl font-semibold text-text group-hover:text-forest transition-colors duration-200 m-0">${escAttr(label)}</h3>
+        </div>
+        <div class="ml-4 bg-forest/10 rounded-full p-3 group-hover:bg-forest/20 transition-colors duration-300">
+          <svg class="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </div>
+      </div>
+    </a>`;
+
+  const data = node.data || (node.data = {});
+  data.hName = 'div';
+  node.children = [{ type: 'html', value: inner }];
+}
 
 function handleVideo(node: any, attrs: Record<string, string>) {
   const src = attrs.src || '';

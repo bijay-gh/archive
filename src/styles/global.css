@@ -48,7 +48,7 @@
   --sp-3xl: 4rem;
 
   /* Layout */
-  --max-width: 72rem;
+  --max-width: 80rem; /* Increased for wider desktop layout */
   --max-width-content: 42rem;
 
   /* Semantic Tokens */

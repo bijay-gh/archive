@@ -1,0 +1,148 @@
+---
+---
+<aside id="toc-sidebar-container" class="toc-sidebar hidden lg:block w-60 shrink-0 sticky top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-4" style="display: none;">
+  <div class="toc-sidebar__header mb-4 font-semibold text-lg border-b border-border pb-2">
+    Table of Contents
+  </div>
+  <nav class="toc-sidebar__nav">
+    <ul id="toc-desktop-list" class="space-y-2 text-sm">
+      <!-- Injected by JS -->
+    </ul>
+  </nav>
+</aside>
+
+<!-- Mobile Toggle -->
+<div id="toc-mobile-toggle-container" class="lg:hidden fixed bottom-6 right-6 z-50" style="display: none;">
+  <button id="toc-mobile-toggle" class="bg-forest text-white rounded-full p-4 shadow-lg focus:outline-none flex items-center gap-2" aria-label="Toggle Table of Contents">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+  </button>
+</div>
+
+<!-- Mobile TOC Modal -->
+<div id="toc-mobile-modal" class="fixed inset-0 z-40 hidden bg-bg/95 backdrop-blur-sm p-6 overflow-y-auto">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-bold">Table of Contents</h2>
+    <button id="toc-mobile-close" class="text-text-muted hover:text-text p-2">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+  </div>
+  <nav>
+    <ul id="toc-mobile-list" class="space-y-4">
+      <!-- Injected by JS -->
+    </ul>
+  </nav>
+</div>
+
+<style>
+  .toc-link.is-active, .toc-mobile-link.is-active {
+    @apply text-forest font-medium;
+    color: var(--forest, #2d5a27);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Find all headings inside .article__body
+    const articleBody = document.querySelector('.article__body');
+    if (!articleBody) return;
+
+    // Only H1 to H4
+    const headings = Array.from(articleBody.querySelectorAll('h1, h2, h3, h4'));
+    if (headings.length === 0) return;
+
+    // 2. Show the TOC containers since we have headings
+    const sidebar = document.getElementById('toc-sidebar-container');
+    const mobileToggleContainer = document.getElementById('toc-mobile-toggle-container');
+    if (sidebar) sidebar.style.display = 'block';
+    if (mobileToggleContainer) mobileToggleContainer.style.display = 'block';
+
+    const desktopList = document.getElementById('toc-desktop-list');
+    const mobileList = document.getElementById('toc-mobile-list');
+
+    // Generate IDs if missing, and build TOC lists
+    headings.forEach((heading) => {
+      if (!heading.id) {
+        // basic slugify
+        heading.id = (heading.textContent || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `h-${Math.random().toString(36).substring(2, 9)}`;
+      }
+
+      const depth = parseInt(heading.tagName.replace('H', ''), 10);
+      const text = heading.textContent || '';
+      
+      // Desktop item
+      if (desktopList) {
+        const li = document.createElement('li');
+        li.className = `toc-item toc-depth-${depth}`;
+        li.style.marginLeft = `${(depth - 1) * 1}rem`;
+        
+        const a = document.createElement('a');
+        a.href = `#${heading.id}`;
+        a.className = 'toc-link block text-text-muted hover:text-text transition-colors duration-200';
+        a.setAttribute('data-slug', heading.id);
+        a.textContent = text;
+        
+        li.appendChild(a);
+        desktopList.appendChild(li);
+      }
+
+      // Mobile item
+      if (mobileList) {
+        const li = document.createElement('li');
+        li.style.marginLeft = `${(depth - 1) * 1}rem`;
+        
+        const a = document.createElement('a');
+        a.href = `#${heading.id}`;
+        a.className = 'toc-mobile-link block text-lg text-text-muted hover:text-text';
+        a.setAttribute('data-slug', heading.id);
+        a.textContent = text;
+        
+        li.appendChild(a);
+        mobileList.appendChild(li);
+      }
+    });
+
+    // 3. Intersection Observer for active heading
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          if (id) {
+            document.querySelectorAll('.toc-link, .toc-mobile-link').forEach((link) => {
+              link.classList.remove('is-active');
+            });
+            document.querySelectorAll(`.toc-link[data-slug="${id}"], .toc-mobile-link[data-slug="${id}"]`).forEach(activeLink => {
+              activeLink.classList.add('is-active');
+            });
+          }
+        }
+      });
+    }, { rootMargin: '-10% 0px -80% 0px' });
+
+    headings.forEach((section) => {
+      observer.observe(section);
+    });
+
+    // 4. Mobile Toggle Logic
+    const mobileToggle = document.getElementById('toc-mobile-toggle');
+    const mobileClose = document.getElementById('toc-mobile-close');
+    const mobileModal = document.getElementById('toc-mobile-modal');
+    
+    if (mobileToggle && mobileModal && mobileClose) {
+      const toggleModal = () => {
+        mobileModal.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden');
+      };
+
+      mobileToggle.addEventListener('click', toggleModal);
+      mobileClose.addEventListener('click', toggleModal);
+      
+      document.querySelectorAll('.toc-mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileModal.classList.add('hidden');
+          document.body.classList.remove('overflow-hidden');
+        });
+      });
+    }
+  });
+</script>

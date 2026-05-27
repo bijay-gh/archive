@@ -3,21 +3,71 @@ interface Props {
   src: string;
   alt?: string;
   caption?: string;
+  width?: string;
+  height?: string;
+  float?: 'left' | 'right' | 'none';
+  align?: 'left' | 'center' | 'right';
+  display?: 'block' | 'inline';
+  margin?: string;
+  rounded?: boolean;
+  border?: boolean;
 }
 
-const { src, alt = '', caption } = Astro.props;
+const { 
+  src, 
+  alt = '', 
+  caption,
+  width = 'auto',
+  height = 'auto',
+  float = 'none',
+  align = 'center',
+  display = 'block',
+  margin = '',
+  rounded = false,
+  border = false,
+} = Astro.props;
+
+let containerClasses = 'media-image relative group ';
+let styleStr = '';
+
+if (display === 'inline') {
+  containerClasses += 'inline-block ';
+} else {
+  containerClasses += 'block ';
+}
+
+if (float === 'left') {
+  containerClasses += 'float-left mr-6 mb-4 ';
+} else if (float === 'right') {
+  containerClasses += 'float-right ml-6 mb-4 ';
+} else if (align === 'center') {
+  containerClasses += 'mx-auto mb-4 ';
+}
+
+if (margin) {
+  styleStr += `margin: ${margin}; `;
+}
+
+styleStr += `width: ${width}; max-width: 100%; `;
+if (height !== 'auto') {
+  styleStr += `height: ${height}; `;
+}
+
+let imgClasses = 'media-image__img w-full h-auto object-cover transition-opacity duration-200 hover:opacity-90 cursor-zoom-in ';
+if (rounded) imgClasses += 'rounded-lg ';
+if (border) imgClasses += 'border border-border/50 shadow-sm ';
 ---
 
-<figure class="media-image">
+<figure class={containerClasses.trim()} style={styleStr.trim()}>
   <img
     src={src}
     alt={alt}
     loading="lazy"
     decoding="async"
     data-lightbox="true"
-    class="media-image__img"
+    class={imgClasses.trim()}
   />
-  {caption && <figcaption class="media-caption">{caption}</figcaption>}
+  {caption && <figcaption class="media-caption mt-2 text-sm text-text-muted text-center italic">{caption}</figcaption>}
 </figure>
 
 <style>

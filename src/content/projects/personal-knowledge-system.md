@@ -5,6 +5,8 @@ pubDate: 2026-05-01
 status: "in-progress"
 tags: ["web-development", "astro", "design"]
 url: "https://github.com/example/knowledge-system"
+toc: true
+toc_depth: 2
 draft: false
 ---
 

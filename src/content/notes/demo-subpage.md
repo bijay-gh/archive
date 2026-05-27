@@ -5,7 +5,8 @@ pubDate: 2026-05-27
 subject: "Demo"
 listed: false
 parent: "demo-features"
-toc: false
+toc: true
+toc_depth: 3
 ---
 
 Welcome to the sub-page! 

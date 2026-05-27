@@ -1,6 +1,6 @@
 ---
 ---
-<aside id="toc-sidebar-container" class="toc-sidebar hidden lg:block w-60 shrink-0 sticky top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-4" style="display: none;">
+<aside id="toc-sidebar-container" class="toc-sidebar hidden w-60 shrink-0 sticky top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-4">
   <div class="toc-sidebar__header mb-4 font-semibold text-lg border-b border-border pb-2">
     Table of Contents
   </div>
@@ -12,21 +12,24 @@
 </aside>
 
 <!-- Mobile Toggle -->
-<div id="toc-mobile-toggle-container" class="lg:hidden fixed bottom-6 right-6 z-50" style="display: none;">
-  <button id="toc-mobile-toggle" class="bg-forest text-white rounded-full p-4 shadow-lg focus:outline-none flex items-center gap-2" aria-label="Toggle Table of Contents">
+<div id="toc-mobile-toggle-container" class="hidden fixed bottom-6 right-6 z-50">
+  <button id="toc-mobile-toggle" class="bg-forest text-white rounded-full p-4 shadow-lg focus:outline-none flex items-center gap-2 hover:bg-forest/90 transition-colors" aria-label="Toggle Table of Contents">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
   </button>
 </div>
 
-<!-- Mobile TOC Modal -->
-<div id="toc-mobile-modal" class="fixed inset-0 z-40 hidden bg-bg/95 backdrop-blur-sm p-6 overflow-y-auto">
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="text-xl font-bold">Table of Contents</h2>
-    <button id="toc-mobile-close" class="text-text-muted hover:text-text p-2">
+<!-- Mobile TOC Overlay -->
+<div id="toc-mobile-overlay" class="fixed inset-0 z-40 hidden bg-black/40 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+<!-- Mobile TOC Drawer -->
+<div id="toc-mobile-drawer" class="fixed inset-y-0 right-0 z-50 w-72 sm:w-80 bg-bg border-l border-border shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+  <div class="flex justify-between items-center p-6 border-b border-border">
+    <h2 class="text-xl font-bold text-text">Table of Contents</h2>
+    <button id="toc-mobile-close" class="text-text-muted hover:text-text p-2 rounded-full hover:bg-bg-alt transition-colors">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
     </button>
   </div>
-  <nav>
+  <nav class="flex-1 overflow-y-auto p-6">
     <ul id="toc-mobile-list" class="space-y-4">
       <!-- Injected by JS -->
     </ul>
@@ -54,8 +57,15 @@
     // 2. Show the TOC containers since we have headings
     const sidebar = document.getElementById('toc-sidebar-container');
     const mobileToggleContainer = document.getElementById('toc-mobile-toggle-container');
-    if (sidebar) sidebar.style.display = 'block';
-    if (mobileToggleContainer) mobileToggleContainer.style.display = 'block';
+    
+    if (sidebar) {
+      sidebar.classList.remove('hidden');
+      sidebar.classList.add('hidden', 'lg:block'); // Ensure it acts responsive
+    }
+    if (mobileToggleContainer) {
+      mobileToggleContainer.classList.remove('hidden');
+      mobileToggleContainer.classList.add('lg:hidden'); // Hidden on desktop
+    }
 
     const desktopList = document.getElementById('toc-desktop-list');
     const mobileList = document.getElementById('toc-mobile-list');
@@ -63,7 +73,6 @@
     // Generate IDs if missing, and build TOC lists
     headings.forEach((heading) => {
       if (!heading.id) {
-        // basic slugify
         heading.id = (heading.textContent || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `h-${Math.random().toString(36).substring(2, 9)}`;
       }
 
@@ -93,7 +102,7 @@
         
         const a = document.createElement('a');
         a.href = `#${heading.id}`;
-        a.className = 'toc-mobile-link block text-lg text-text-muted hover:text-text';
+        a.className = 'toc-mobile-link block text-lg text-text-muted hover:text-text transition-colors duration-200';
         a.setAttribute('data-slug', heading.id);
         a.textContent = text;
         
@@ -123,25 +132,37 @@
       observer.observe(section);
     });
 
-    // 4. Mobile Toggle Logic
+    // 4. Mobile Toggle & Drawer Logic
     const mobileToggle = document.getElementById('toc-mobile-toggle');
     const mobileClose = document.getElementById('toc-mobile-close');
-    const mobileModal = document.getElementById('toc-mobile-modal');
+    const mobileOverlay = document.getElementById('toc-mobile-overlay');
+    const mobileDrawer = document.getElementById('toc-mobile-drawer');
     
-    if (mobileToggle && mobileModal && mobileClose) {
-      const toggleModal = () => {
-        mobileModal.classList.toggle('hidden');
-        document.body.classList.toggle('overflow-hidden');
+    if (mobileToggle && mobileDrawer && mobileClose && mobileOverlay) {
+      const openDrawer = () => {
+        mobileOverlay.classList.remove('hidden');
+        // Small delay to allow display block to apply before opacity transition
+        setTimeout(() => mobileOverlay.classList.remove('opacity-0'), 10);
+        mobileDrawer.classList.remove('translate-x-full');
+        document.body.classList.add('overflow-hidden');
       };
 
-      mobileToggle.addEventListener('click', toggleModal);
-      mobileClose.addEventListener('click', toggleModal);
+      const closeDrawer = () => {
+        mobileOverlay.classList.add('opacity-0');
+        mobileDrawer.classList.add('translate-x-full');
+        document.body.classList.remove('overflow-hidden');
+        setTimeout(() => mobileOverlay.classList.add('hidden'), 300);
+      };
+
+      mobileToggle.addEventListener('click', openDrawer);
+      mobileClose.addEventListener('click', closeDrawer);
+      mobileOverlay.addEventListener('click', closeDrawer);
       
-      document.querySelectorAll('.toc-mobile-link').forEach(link => {
-        link.addEventListener('click', () => {
-          mobileModal.classList.add('hidden');
-          document.body.classList.remove('overflow-hidden');
-        });
+      // Close drawer when a link is clicked
+      mobileDrawer.addEventListener('click', (e) => {
+        if (e.target.closest('.toc-mobile-link')) {
+          closeDrawer();
+        }
       });
     }
   });

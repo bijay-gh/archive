@@ -1,0 +1,6 @@
+---
+import { getLinkWarningIconHTML } from "../../utils/safeRender.ts";
+export interface Props { message: string; }
+const { message } = Astro.props;
+---
+<Fragment set:html={getLinkWarningIconHTML(message)} />

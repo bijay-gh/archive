@@ -2,7 +2,7 @@
 title: "Deep Dive: The Pre-GPU Era"
 description: "What was happening before the GPU"
 pubDate: 2026-05-27
-subject: "Computer Vision"
+subject: "HPC"
 listed: false
 parent: "gpu_main"
 toc: true

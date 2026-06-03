@@ -1,28 +1,35 @@
+import { validateLocalFile, logWarning } from './linkValidator.ts';
+import { renderImageFallbackHTML } from './safeRender.ts';
+
 /**
  * Processes custom LaTeX image macros and \clearfloat, converting them to HTML.
  */
-export function processLatexImageMacros(content: string): string {
+export function processLatexImageMacros(content: string, filePath?: string): string {
   let processed = content;
 
   // \imageleft{src}{width}{caption}
   // e.g. \imageleft{chart.png}{0.35}{Caption here}
   processed = processed.replace(/\\imageleft\{(.*?)\}\{(.*?)\}\{(.*?)\}/g, (match, src, width, caption) => {
-    return generateImageHtml(src, width, caption, 'left');
+    return generateImageHtml(src, width, caption, 'left', filePath);
   });
 
   // \imageright{src}{width}{caption}
   processed = processed.replace(/\\imageright\{(.*?)\}\{(.*?)\}\{(.*?)\}/g, (match, src, width, caption) => {
-    return generateImageHtml(src, width, caption, 'right');
+    return generateImageHtml(src, width, caption, 'right', filePath);
   });
 
   // \imagecenter{src}{width}{caption}
   processed = processed.replace(/\\imagecenter\{(.*?)\}\{(.*?)\}\{(.*?)\}/g, (match, src, width, caption) => {
-    return generateImageHtml(src, width, caption, 'center');
+    return generateImageHtml(src, width, caption, 'center', filePath);
   });
 
   // \imageinline{src}{height}
   // e.g. \imageinline{icon.png}{1.2em}
   processed = processed.replace(/\\imageinline\{(.*?)\}\{(.*?)\}/g, (match, src, height) => {
+    if (!validateLocalFile(src, filePath)) {
+      logWarning('Broken LaTeX Inline Image', filePath || 'unknown', src);
+      return `<span class="inline-block text-accent font-semibold cursor-help" title="Image unavailable: ${src}">[?]</span>`;
+    }
     return `<img src="${src}" style="height: ${height}; width: auto;" class="inline-block align-middle mx-1" />`;
   });
 
@@ -61,13 +68,18 @@ export function processLatexImageMacros(content: string): string {
     if (capMatch) caption = capMatch[1];
 
     if (!src) return match;
-    return generateImageHtml(src, width, caption, 'center');
+    return generateImageHtml(src, width, caption, 'center', filePath);
   });
 
   return processed;
 }
 
-function generateImageHtml(src: string, width: string, caption: string, align: 'left' | 'right' | 'center'): string {
+function generateImageHtml(src: string, width: string, caption: string, align: 'left' | 'right' | 'center', filePath?: string): string {
+  if (!validateLocalFile(src, filePath)) {
+    logWarning('Broken LaTeX Image', filePath || 'unknown', src);
+    return renderImageFallbackHTML(src);
+  }
+
   // Translate latex widths like 0.35 to 35% if they don't have units
   let cssWidth = width;
   if (/^[0-9.]+$/.test(width)) {

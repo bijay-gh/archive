@@ -1,0 +1,6 @@
+---
+import { renderFileFallbackHTML } from "../../utils/safeRender.ts";
+export interface Props { src: string; message?: string; }
+const { src, message } = Astro.props;
+---
+<Fragment set:html={renderFileFallbackHTML(src, message)} />

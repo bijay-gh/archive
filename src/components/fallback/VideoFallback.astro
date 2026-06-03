@@ -1,0 +1,6 @@
+---
+import { renderVideoFallbackHTML } from "../../utils/safeRender.ts";
+export interface Props { src: string; }
+const { src } = Astro.props;
+---
+<Fragment set:html={renderVideoFallbackHTML(src)} />

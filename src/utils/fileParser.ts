@@ -3,6 +3,7 @@ import path from 'node:path';
 import mammoth from 'mammoth';
 import katex from 'katex';
 import { processLatexImageMacros } from './latexImageMacros.ts';
+import { renderFileFallbackHTML, renderMathFallbackHTML } from './safeRender.ts';
 
 // Base content directory
 const CONTENT_DIR = path.join(process.cwd(), 'src', 'content');
@@ -19,10 +20,14 @@ export function getFilePath(collection: string, filename: string): string {
  */
 export async function parseDocx(filePath: string): Promise<string> {
   if (!fs.existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
+    return renderFileFallbackHTML(filePath, "Document could not be loaded: file not found");
   }
-  const result = await mammoth.extractToHtml({ path: filePath });
-  return result.value;
+  try {
+    const result = await mammoth.extractToHtml({ path: filePath });
+    return result.value;
+  } catch (e: any) {
+    return renderFileFallbackHTML(filePath, "Document could not be loaded: " + e.message);
+  }
 }
 
 /**
@@ -32,7 +37,7 @@ export async function parseDocx(filePath: string): Promise<string> {
  */
 export function parseTex(filePath: string): string {
   if (!fs.existsSync(filePath)) {
-    throw new Error(`File not found: ${filePath}`);
+    return renderFileFallbackHTML(filePath, "LaTeX document could not be loaded: file not found");
   }
   
   let content = fs.readFileSync(filePath, 'utf-8');
@@ -44,7 +49,21 @@ export function parseTex(filePath: string): string {
   }
 
   // Process custom image macros and standard figures
-  content = processLatexImageMacros(content);
+  content = processLatexImageMacros(content, filePath);
+
+  // Process undefined references and citations (fallback)
+  content = content.replace(/\\ref\{([^}]+)\}/g, (match, label) => {
+    return `<span class="inline-block text-accent font-semibold cursor-help" title="Reference '${label}' not found">[?]</span>`;
+  });
+  content = content.replace(/\\cite\{([^}]+)\}/g, (match, key) => {
+    return `<span class="inline-block text-accent font-semibold cursor-help" title="Citation '${key}' not found">[citation?]</span>`;
+  });
+  content = content.replace(/\\(?:input|include)\{([^}]+)\}/g, (match, file) => {
+    return renderFileFallbackHTML(file + '.tex', `Included file not found`);
+  });
+  content = content.replace(/\\bibliography\{([^}]+)\}/g, (match, file) => {
+    return renderFileFallbackHTML(file + '.bib', `Bibliography file not found`);
+  });
 
   // Convert sections to HTML headings with IDs
   content = content.replace(/\\(section|subsection|subsubsection)\*?\{(.*?)\}/g, (match, type, title) => {
@@ -59,18 +78,18 @@ export function parseTex(filePath: string): string {
   // Render display math: $$...$$ or \[...\]
   content = content.replace(/\$\$(.*?)\$\$/gs, (match, math) => {
     try {
-      return katex.renderToString(math, { displayMode: true, throwOnError: false });
-    } catch (e) {
-      return `<div class="math-error">${math}</div>`;
+      return katex.renderToString(math, { displayMode: true, throwOnError: true });
+    } catch (e: any) {
+      return renderMathFallbackHTML(math, true);
     }
   });
 
   // Render inline math: $...$ or \(...\)
   content = content.replace(/\$(.*?)\$/g, (match, math) => {
     try {
-      return katex.renderToString(math, { displayMode: false, throwOnError: false });
-    } catch (e) {
-      return `<span class="math-error">${math}</span>`;
+      return katex.renderToString(math, { displayMode: false, throwOnError: true });
+    } catch (e: any) {
+      return renderMathFallbackHTML(math, false);
     }
   });
 

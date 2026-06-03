@@ -23,19 +23,13 @@ const currentPath = Astro.url.pathname;
 
 <header class="masthead">
   <div class="masthead__inner container">
-    <div class="masthead__rule masthead__rule--top"></div>
-
-    <div class="masthead__dateline">
+    <div class="masthead__header-row">
       <span class="masthead__date">{dateStr}</span>
+      <a href="/" class="masthead__title-link">
+        <h1 class="masthead__title">The Archive</h1>
+      </a>
       <ThemeToggle />
     </div>
-
-    <a href="/" class="masthead__title-link">
-      <h1 class="masthead__title">The Archive</h1>
-    </a>
-    <p class="masthead__tagline">
-      A Personal Journal of Exploration and Research
-    </p>
 
     <div class="masthead__rule masthead__rule--bottom"></div>
 
@@ -78,42 +72,65 @@ const currentPath = Astro.url.pathname;
 
 <style>
   .masthead {
-    padding-top: var(--sp-lg);
+    padding-top: var(--sp-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--bg-primary);
+    transition: transform 0.25s ease-in-out, background-color 0.25s ease-in-out, backdrop-filter 0.25s ease-in-out;
+  }
+
+  .masthead.is-hidden {
+    transform: translateY(-100%);
+  }
+
+  .masthead.is-scrolled {
+    background-color: color-mix(in srgb, var(--bg-primary) 85%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .masthead::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .masthead {
+      transition: none;
+    }
   }
 
   .masthead__inner {
     text-align: center;
   }
 
-  .masthead__rule--top {
-    border-top: 2px solid var(--text-primary);
-    margin-bottom: var(--sp-sm);
-  }
-
-  .masthead__rule--bottom {
-    border-top: 3px double var(--border-dark);
-    margin-top: var(--sp-sm);
-    margin-bottom: var(--sp-sm);
-  }
-
-  .masthead__rule--nav {
-    border-top: 1px solid var(--border);
-    margin-top: var(--sp-sm);
-  }
-
-  .masthead__dateline {
+  .masthead__header-row {
+    position: relative;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: var(--sp-sm);
+    padding: 0 var(--sp-md);
   }
 
   .masthead__date {
+    position: absolute;
+    left: var(--sp-md);
     font-family: var(--font-label);
     font-size: var(--fs-xs);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);
+  }
+
+  :global(.theme-toggle) {
+    position: absolute !important;
+    right: var(--sp-md) !important;
   }
 
   .masthead__title-link {
@@ -135,13 +152,15 @@ const currentPath = Astro.url.pathname;
     line-height: 1;
   }
 
-  .masthead__tagline {
-    font-family: var(--font-label);
-    font-size: var(--fs-xs);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin: var(--sp-xs) 0 0;
+  .masthead__rule--bottom {
+    border-top: 3px double var(--border-dark);
+    margin-top: var(--sp-sm);
+    margin-bottom: var(--sp-sm);
+  }
+
+  .masthead__rule--nav {
+    border-top: 1px solid var(--border);
+    margin-top: var(--sp-sm);
   }
 
   /* ── Navigation ── */
@@ -220,6 +239,17 @@ const currentPath = Astro.url.pathname;
     .masthead__nav-link {
       display: block;
       padding: var(--sp-sm);
+    }
+
+    .masthead__header-row {
+      flex-direction: column;
+      gap: var(--sp-sm);
+      padding: 0;
+    }
+
+    .masthead__date,
+    :global(.theme-toggle) {
+      position: static !important;
     }
 
     .nav-toggle-checkbox:checked ~ .masthead__nav-list {

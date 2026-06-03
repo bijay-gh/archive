@@ -4,33 +4,34 @@
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Google Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
 
 /* ── CSS Custom Properties ── */
 :root {
   /* Core Palette */
-  --color-parchment: #F5F0E8;
-  --color-parchment-light: #FAF8F3;
-  --color-parchment-dark: #E8E0D0;
-  --color-ink: #2C1A0E;
-  --color-ink-light: #4A3728;
-  --color-ink-faded: #8B7355;
+  --color-parchment: #E8DFCB;
+  --color-parchment-light: #F0E9D8;
+  --color-parchment-dark: #D1C5AD;
+  --color-ink: #2E1E0F;
+  --color-ink-light: #4A3420;
+  --color-ink-faded: #68543B;
   --color-burgundy: #6B1E2E;
   --color-burgundy-light: #8A2E42;
   --color-forest: #1E3D2F;
   --color-forest-light: #2D5A44;
-  --color-rule: #C4B5A0;
-  --color-rule-dark: #8B7355;
+  --color-rule: #8C7A63;
+  --color-rule-dark: #68543B;
 
   /* Typography */
   --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  --font-body: 'EB Garamond', Garaard, 'Times New Roman', serif;
+  --font-body: 'Libre Baskerville', 'EB Garamond', Garaard, 'Times New Roman', serif;
   --font-label: 'Josefin Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Courier Prime', Courier, monospace;
 
   /* Font Sizes */
   --fs-xs: 0.75rem;
   --fs-sm: 0.875rem;
-  --fs-base: 1.125rem;
+  --fs-base: 1.15rem;
   --fs-lg: 1.25rem;
   --fs-xl: 1.5rem;
   --fs-2xl: 2rem;
@@ -48,8 +49,11 @@
   --sp-3xl: 4rem;
 
   /* Layout */
-  --max-width: 80rem; /* Increased for wider desktop layout */
-  --max-width-content: 42rem;
+  --container-max-w: 64rem;
+  --toc-width: 260px;
+  --toc-gap: 3rem;
+  --container-max-w-toc: calc(var(--container-max-w) + var(--toc-width) + var(--toc-gap));
+  --max-width-content: var(--container-max-w);
 
   /* Semantic Tokens */
   --bg-primary: var(--color-parchment);
@@ -72,18 +76,18 @@
 
 /* ── Dark Mode ── */
 [data-theme="dark"] {
-  --bg-primary: #1A1208;
-  --bg-secondary: #241A0F;
-  --bg-card: #1F1610;
-  --text-primary: #D4C5A9;
-  --text-secondary: #B8A88A;
-  --text-muted: #8B7B60;
+  --bg-primary: #17130E;
+  --bg-secondary: #221C15;
+  --bg-card: #1D1812;
+  --text-primary: #CBBCA3;
+  --text-secondary: #B0A086;
+  --text-muted: #857660;
   --accent: #C4667A;
   --accent-hover: #D4899A;
   --accent-alt: #5FAF85;
   --accent-alt-hover: #7CC9A0;
-  --border: #3D2E1F;
-  --border-dark: #5A4A35;
+  --border: #3A3024;
+  --border-dark: #504435;
 }
 
 /* ── Reset & Base ── */
@@ -104,7 +108,7 @@ html {
 body {
   font-family: var(--font-body);
   font-size: var(--fs-base);
-  line-height: 1.7;
+  line-height: 1.8;
   color: var(--text-primary);
   background-color: var(--bg-primary);
   min-height: 100vh;
@@ -120,20 +124,20 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.025;
+  opacity: 0.07;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
 }
 
 [data-theme="dark"] body::after {
-  opacity: 0.04;
+  opacity: 0.09;
 }
 
 /* ── Typography ── */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
   color: var(--text-primary);
   text-wrap: balance;
@@ -157,6 +161,7 @@ a {
 
 a:hover {
   color: var(--accent-hover);
+  text-decoration: underline;
 }
 
 strong { font-weight: 700; }
@@ -261,8 +266,8 @@ blockquote p {
 /* ── Drop Cap ── */
 .drop-cap::first-letter {
   font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 2.8em; /* Reduced from 4.2em */
+  font-weight: 900;
+  font-size: 3.2em;
   float: left;
   line-height: 0.85;
   margin-right: 0.1em;
@@ -297,7 +302,7 @@ blockquote p {
 }
 
 .prose code {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-mono);
   font-size: 0.9em;
   background: var(--bg-secondary);
   padding: 0.15em 0.35em;
@@ -329,9 +334,31 @@ blockquote p {
 
 /* ── Layout Utilities ── */
 .container {
-  max-width: var(--max-width);
+  width: 100%;
+  max-width: var(--container-max-w);
   margin: 0 auto;
-  padding: 0 var(--sp-xl);
+  padding: 0 1.5rem;
+}
+@media (min-width: 768px) { .container { padding: 0 2.5rem; } }
+@media (min-width: 1024px) { .container { padding: 0 4rem; } }
+
+.container-toc {
+  width: 100%;
+  max-width: var(--container-max-w-toc);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+@media (min-width: 768px) { .container-toc { padding: 0 2.5rem; } }
+@media (min-width: 1024px) { .container-toc { padding: 0 4rem; } }
+
+.toc-grid {
+  display: grid;
+  grid-template-columns: var(--toc-width) minmax(0, var(--container-max-w));
+  gap: var(--toc-gap);
+  justify-content: center;
+}
+@media (max-width: 1023px) {
+  .toc-grid { display: block; }
 }
 
 .text-center { text-align: center; }
@@ -378,11 +405,11 @@ blockquote p {
 .tag {
   display: inline-block;
   font-family: var(--font-label);
-  font-size: var(--fs-xs);
+  font-size: 0.6rem;
   font-weight: 500;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 0.2em 0.6em;
+  padding: 0.1em 0.3em;
   border: 1px solid var(--border);
   color: var(--text-muted);
   transition: all var(--transition-fast);
@@ -402,11 +429,12 @@ blockquote p {
 /* ── Category Labels ── */
 .category-label {
   font-family: var(--font-label);
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
 .category-label--forest {
@@ -438,10 +466,6 @@ blockquote p {
     --fs-4xl: 2.5rem;
     --fs-3xl: 2rem;
     --fs-2xl: 1.5rem;
-  }
-
-  .container {
-    padding: 0 var(--sp-md);
   }
 
   h1 { font-size: var(--fs-2xl); }

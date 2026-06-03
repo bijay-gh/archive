@@ -4,8 +4,10 @@ tags: ["gpu", "history", "computer graphics"]
 author: "Bijaya Ghimire"
 pubDate: 2025-12-07
 description: "History of GPUs: How Display Devices Slowly Evolved into Mathematical Machines"
-toc: true
-toc_depth: 3
+subject: "Computing"
+# toc: true
+# toc_depth: 3
+draft: false
 ---
 
 From 1970 to 1990, graphics hardware evolved through a series of specialized, task-specific accelerators that gradually shaped the modern GPU. Early systems like Evans & Sutherland’s vector displays used display lists to draw lines directly for flight simulation, proving hardware graphics was feasible but limited to wireframes. In 1982, Silicon Graphics’ Geometry Engine moved expensive 4×4 matrix math into dedicated silicon using pipelined VLSI chips, enabling real-time 3D transformations for professional workstations and film effects. At the pixel level, the Amiga’s Blitter (1985) revolutionized 2D graphics by offloading fast block image transfers, fills, and raster operations from the CPU, a concept later mirrored by PC 2D accelerators such as ATI Mach and S3 chips. Consoles like the NES took a different path with tile- and sprite-based rendering using a PPU to avoid full framebuffers, an idea echoed today in mobile tile-based GPUs. By the mid-1990s, first consumer 3D accelerators such as 3dfx Voodoo introduced fixed-function triangle rasterization and texture mapping, while others like S3 ViRGE and NVIDIA NV1 showed the risks of weak performance and non-standard primitives. Late-1990s chips like NVIDIA RIVA/TNT, Voodoo2/3, ATI Rage, and Matrox G200 brought mature raster pipelines to PCs but still relied on the CPU for all geometry and lighting. Together, these developments show how geometry, rasterization, and pixel movement were accelerated separately for decades before finally merging into the unified, programmable GPU with hardware T&L at the dawn of the 2000s.

@@ -85,8 +85,8 @@ breadcrumbItems.push({ label: project.data.title, url: '#' });
         </a>
       )}
     </header>
-    <OrnamentalDivider variant="stars" />
-    <div class="article__body prose drop-cap w-full max-w-none">
+    <OrnamentalDivider variant="stars" compact={true} />
+    <div class="article__body prose drop-cap">
       {Content && <Content />}
       {format === 'docx' && <div set:html={htmlContent} />}
       {format === 'tex' && <div set:html={htmlContent} />}
@@ -102,12 +102,12 @@ breadcrumbItems.push({ label: project.data.title, url: '#' });
 </ContentLayout>
 
 <style>
-  .article { padding: var(--sp-xl) 0 var(--sp-2xl); width: 100%; }
-  .article__header { text-align: center; margin-bottom: var(--sp-md); }
+  .article { padding: var(--sp-md) 0 var(--sp-xl); width: 100%; max-width: 100%; }
+  .article__header { text-align: center; margin-bottom: var(--sp-xs); }
   .article__badges { display: flex; justify-content: center; gap: var(--sp-sm); align-items: center; }
-  .article__title { font-size: var(--fs-4xl); margin: var(--sp-sm) 0 var(--sp-md); line-height: 1.15; }
-  .article__meta { display: flex; justify-content: center; gap: var(--sp-sm); flex-wrap: wrap; margin-bottom: var(--sp-md); }
-  .article__sep { color: var(--text-muted); }
+  .article__title { font-size: var(--fs-3xl); margin: var(--sp-xs) 0; line-height: 1.1; }
+  .article__meta { display: flex; justify-content: center; align-items: center; gap: var(--sp-xs); flex-wrap: wrap; margin-bottom: var(--sp-xs); font-size: 0.65rem; opacity: 0.7; }
+  .article__sep { color: var(--text-muted); font-size: 0.5rem; }
   .article__footer { text-align: center; padding-top: var(--sp-xl); }
   .status-badge {
     font-family: var(--font-label);
@@ -122,6 +122,6 @@ breadcrumbItems.push({ label: project.data.title, url: '#' });
   .status-badge--completed { border-color: var(--accent); color: var(--accent); }
   .status-badge--archived { border-color: var(--text-muted); color: var(--text-muted); }
   .project-link { margin-top: var(--sp-sm); }
-  @media (max-width: 600px) { .article__title { font-size: var(--fs-2xl); } }
+  @media (max-width: 600px) { .article__title { font-size: var(--fs-xl); } }
   .pdf-viewer { width: 100%; height: 80vh; border: 1px solid var(--border); border-radius: 4px; }
 </style>

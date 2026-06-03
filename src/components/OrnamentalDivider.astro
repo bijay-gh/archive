@@ -1,9 +1,10 @@
 ---
 interface Props {
   variant?: 'floral' | 'diamond' | 'stars' | 'rule' | 'section';
+  compact?: boolean;
 }
 
-const { variant = 'floral' } = Astro.props;
+const { variant = 'floral', compact = false } = Astro.props;
 
 const symbols: Record<string, string> = {
   floral: '❦',
@@ -14,7 +15,7 @@ const symbols: Record<string, string> = {
 };
 ---
 
-<div class:list={['ornament', `ornament--${variant}`]} role="separator" aria-hidden="true">
+<div class:list={['ornament', `ornament--${variant}`, { 'ornament--compact': compact }]} role="separator" aria-hidden="true">
   <span class="ornament__symbol">{symbols[variant]}</span>
 </div>
 
@@ -26,6 +27,20 @@ const symbols: Record<string, string> = {
     gap: var(--sp-md);
     margin: var(--sp-2xl) 0;
     user-select: none;
+  }
+
+  .ornament--compact {
+    margin: var(--sp-md) 0;
+  }
+
+  .ornament--compact::before,
+  .ornament--compact::after {
+    opacity: 0.5;
+  }
+
+  .ornament--compact .ornament__symbol {
+    font-size: 0.65rem;
+    transform: scale(0.8);
   }
 
   .ornament::before,

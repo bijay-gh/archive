@@ -1,6 +1,8 @@
 import { visit } from 'unist-util-visit';
 import type { Plugin } from 'unified';
 import { handleMdImage, handleMdClearfix } from './mdImageDirective.ts';
+import { validateLocalFile, validateUrl, logWarning } from './linkValidator.ts';
+import { renderVideoFallbackHTML, renderAudioFallbackHTML } from './safeRender.ts';
 
 /**
  * Detects if a URL is a YouTube video and extracts the video ID.
@@ -43,7 +45,10 @@ export function escAttr(s: string): string {
  *   ::gallery{images="a.png,b.png,c.png" captions="Cap A,Cap B,Cap C"}
  */
 const remarkMediaDirectives: Plugin = () => {
-  return (tree: any) => {
+  return async (tree: any, file: any) => {
+    const promises: Promise<void>[] = [];
+    const filePath = file.history && file.history.length > 0 ? file.history[0] : 'unknown_file';
+
     visit(tree, (node: any) => {
       // Only process leaf directives (::name{...})
       if (node.type !== 'leafDirective') return;
@@ -51,20 +56,24 @@ const remarkMediaDirectives: Plugin = () => {
       const attrs = node.attributes || {};
       const name = node.name;
 
-      if (name === 'video') {
-        handleVideo(node, attrs);
-      } else if (name === 'image') {
-        handleMdImage(node, attrs);
-      } else if (name === 'audio') {
-        handleAudio(node, attrs);
-      } else if (name === 'gallery') {
-        handleGallery(node, attrs);
-      } else if (name === 'clearfix') {
-        handleMdClearfix(node);
-      } else if (name === 'subpage') {
-        handleSubpage(node, attrs);
-      }
+      promises.push((async () => {
+        if (name === 'video') {
+          await handleVideo(node, attrs, filePath);
+        } else if (name === 'image') {
+          await handleMdImage(node, attrs, filePath);
+        } else if (name === 'audio') {
+          await handleAudio(node, attrs, filePath);
+        } else if (name === 'gallery') {
+          handleGallery(node, attrs);
+        } else if (name === 'clearfix') {
+          handleMdClearfix(node);
+        } else if (name === 'subpage') {
+          handleSubpage(node, attrs);
+        }
+      })());
     });
+    
+    await Promise.all(promises);
   };
 };
 
@@ -91,7 +100,7 @@ function handleSubpage(node: any, attrs: Record<string, string>) {
   node.children = [{ type: 'html', value: inner }];
 }
 
-function handleVideo(node: any, attrs: Record<string, string>) {
+async function handleVideo(node: any, attrs: Record<string, string>, filePath: string) {
   const src = attrs.src || '';
   const url = attrs.url || '';
   const caption = attrs.caption || '';
@@ -101,6 +110,21 @@ function handleVideo(node: any, attrs: Record<string, string>) {
 
   const ytId = getYouTubeId(target);
   const vimeoId = getVimeoId(target);
+  
+  if (target.startsWith('http')) {
+    const isValid = await validateUrl(target);
+    if (!isValid) {
+      logWarning('Broken External Video', filePath, target);
+      node.type = 'html';
+      node.value = renderVideoFallbackHTML(target);
+      return;
+    }
+  } else if (!validateLocalFile(target, filePath)) {
+    logWarning('Broken Local Video', filePath, target);
+    node.type = 'html';
+    node.value = renderVideoFallbackHTML(target);
+    return;
+  }
 
   if (ytId) {
     inner = `
@@ -147,36 +171,28 @@ function handleVideo(node: any, attrs: Record<string, string>) {
   node.children = [{ type: 'html', value: inner }];
 }
 
-function handleImage(node: any, attrs: Record<string, string>) {
-  const src = attrs.src || '';
-  const alt = attrs.alt || '';
-  const caption = attrs.caption || alt;
+// handleMdImage is moved to mdImageDirective.ts
 
-  let inner = `
-    <img
-      src="${escAttr(src)}"
-      alt="${escAttr(alt)}"
-      loading="lazy"
-      decoding="async"
-      data-lightbox="true"
-      class="media-image__img"
-    />`;
-
-  if (caption) {
-    inner += `<figcaption class="media-caption">${caption}</figcaption>`;
-  }
-
-  const data = node.data || (node.data = {});
-  data.hName = 'figure';
-  data.hProperties = { class: 'media-image' };
-  node.children = [{ type: 'html', value: inner }];
-}
-
-function handleAudio(node: any, attrs: Record<string, string>) {
+async function handleAudio(node: any, attrs: Record<string, string>, filePath: string) {
   const src = attrs.src || '';
   const url = attrs.url || '';
   const caption = attrs.caption || '';
   const target = url || src;
+
+  if (target.startsWith('http')) {
+    const isValid = await validateUrl(target);
+    if (!isValid) {
+      logWarning('Broken External Audio', filePath, target);
+      node.type = 'html';
+      node.value = renderAudioFallbackHTML(target);
+      return;
+    }
+  } else if (!validateLocalFile(target, filePath)) {
+    logWarning('Broken Local Audio', filePath, target);
+    node.type = 'html';
+    node.value = renderAudioFallbackHTML(target);
+    return;
+  }
 
   let inner = `
     <div class="audio-player" data-audio-src="${escAttr(target)}">

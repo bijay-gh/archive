@@ -1,8 +1,8 @@
 ---
 ---
-<aside id="toc-sidebar-container" class="toc-sidebar hidden w-60 shrink-0 sticky top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-4">
-  <div class="toc-sidebar__header mb-4 font-semibold text-lg border-b border-border pb-2">
-    Table of Contents
+<aside id="toc-sidebar-container" class="toc-sidebar hidden sticky top-24 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-4 scrollbar-hide">
+  <div class="toc-sidebar__header mb-4 text-xs font-bold tracking-[0.2em] uppercase text-text-muted">
+    CONTENTS
   </div>
   <nav class="toc-sidebar__nav">
     <ul id="toc-desktop-list" class="space-y-2 text-sm">
@@ -37,10 +37,20 @@
 </div>
 
 <style>
+  .toc-sidebar.scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .toc-sidebar.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
   .toc-link.is-active, .toc-mobile-link.is-active {
-    @apply text-forest font-medium;
-    color: var(--forest, #2d5a27);
+    color: var(--accent);
     font-weight: 600;
+  }
+  .toc-link.is-active {
+    border-left: 2px solid var(--accent);
+    padding-left: 0.5rem;
   }
 </style>
 
@@ -87,7 +97,7 @@
         
         const a = document.createElement('a');
         a.href = `#${heading.id}`;
-        a.className = 'toc-link block text-text-muted hover:text-text transition-colors duration-200';
+        a.className = 'toc-link block text-text-muted hover:text-text transition-all duration-200';
         a.setAttribute('data-slug', heading.id);
         a.textContent = text;
         

@@ -1,0 +1,6 @@
+---
+import { renderMathFallbackHTML } from "../../utils/safeRender.ts";
+export interface Props { source: string; isBlock?: boolean; }
+const { source, isBlock = false } = Astro.props;
+---
+<Fragment set:html={renderMathFallbackHTML(source, isBlock)} />

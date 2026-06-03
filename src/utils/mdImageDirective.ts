@@ -1,3 +1,6 @@
+import { validateLocalFile, validateUrl, logWarning } from './linkValidator.ts';
+import { renderImageFallbackHTML } from './safeRender.ts';
+
 /**
  * Escapes HTML special characters for safe embedding in attributes.
  */
@@ -5,11 +8,26 @@ function escAttr(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-export function handleMdImage(node: any, attrs: Record<string, string>) {
+export async function handleMdImage(node: any, attrs: Record<string, string>, filePath: string) {
   const src = attrs.src || '';
   const alt = attrs.alt || '';
   const caption = attrs.caption || '';
   
+  if (src.startsWith('http')) {
+    const isValid = await validateUrl(src);
+    if (!isValid) {
+      logWarning('Broken External Image', filePath, src);
+      node.type = 'html';
+      node.value = renderImageFallbackHTML(src);
+      return;
+    }
+  } else if (!validateLocalFile(src, filePath)) {
+    logWarning('Broken Local Image', filePath, src);
+    node.type = 'html';
+    node.value = renderImageFallbackHTML(src);
+    return;
+  }
+
   const width = attrs.width || 'auto';
   const height = attrs.height || 'auto';
   const float = attrs.float || 'none'; // left, right, none

@@ -2,8 +2,19 @@
 import ThemeToggle from "./ThemeToggle.astro";
 
 const today = new Date();
-const dateStr = today.toLocaleDateString("en-US", {
-  weekday: "long",
+const dateDesktop = today.toLocaleDateString("en-US", {
+  weekday: "short",
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+const dateTablet = today.toLocaleDateString("en-US", {
+  weekday: "short",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+const dateMobile = today.toLocaleDateString("en-US", {
   year: "numeric",
   month: "long",
   day: "numeric",
@@ -22,45 +33,78 @@ const currentPath = Astro.url.pathname;
 ---
 
 <header class="masthead">
-  <div class="masthead__inner container">
-    <div class="masthead__header-row">
-      <span class="masthead__date">{dateStr}</span>
+  <div class="masthead__inner container mx-auto">
+    <!-- Top Row: Date, Title, Toggle (hidden on mobile) -->
+    <div
+      class="hidden md:grid grid-cols-[1fr_auto_1fr] items-center px-4 gap-2"
+    >
+      <div class="flex justify-start items-center min-w-0">
+        <span class="masthead__date hidden lg:block">{dateDesktop}</span>
+        <span class="masthead__date hidden md:block lg:hidden"
+          >{dateTablet}</span
+        >
+      </div>
+
+      <div class="flex justify-center items-center min-w-0">
+        <a href="/" class="masthead__title-link">
+          <h1 class="masthead__title">The Archive</h1>
+        </a>
+      </div>
+
+      <div class="flex justify-end items-center">
+        <ThemeToggle />
+      </div>
+    </div>
+
+    <!-- Mobile Top Row: Title Only -->
+    <div class="flex md:hidden justify-center items-center px-4">
       <a href="/" class="masthead__title-link">
         <h1 class="masthead__title">The Archive</h1>
       </a>
-      <ThemeToggle />
+    </div>
+
+    <!-- Mobile secondary row for Date and Toggle (hidden on desktop/tablet) -->
+    <div class="flex md:hidden justify-between items-center px-4 mt-2">
+      <div class="flex justify-start items-center min-w-0">
+        <span class="masthead__date block">{dateMobile}</span>
+      </div>
+      <div class="flex justify-end items-center">
+        <ThemeToggle />
+      </div>
     </div>
 
     <div class="masthead__rule masthead__rule--bottom"></div>
 
-    <nav class="masthead__nav" aria-label="Main navigation">
-      <input
-        type="checkbox"
-        id="nav-toggle"
-        class="nav-toggle-checkbox"
-        aria-hidden="true"
-      />
-      <label
-        for="nav-toggle"
-        class="nav-toggle-label"
-        aria-label="Toggle navigation menu"
+    <!-- Navigation Row -->
+    <nav class="masthead__nav px-2" aria-label="Main navigation">
+      <ul
+        class="header-nav-list flex md:flex-wrap justify-start md:justify-center items-center gap-2 m-0 p-0 list-none overflow-x-auto md:overflow-x-visible pb-1 md:pb-0"
       >
-        <span></span><span></span><span></span>
-      </label>
-      <ul class="masthead__nav-list">
         {
-          navLinks.map((link) => (
-            <li>
-              <a
-                href={link.href}
-                class:list={[
-                  "masthead__nav-link",
-                  { active: currentPath === link.href },
-                ]}
-              >
-                {link.label}
-              </a>
-            </li>
+          navLinks.map((link, index) => (
+            <>
+              <li class="shrink-0">
+                <a
+                  href={link.href}
+                  class:list={[
+                    "masthead__nav-link",
+                    {
+                      active:
+                        currentPath === link.href ||
+                        (link.href !== "/" &&
+                          currentPath.startsWith(link.href)),
+                    },
+                  ]}
+                >
+                  {link.label}
+                </a>
+              </li>
+              {index < navLinks.length - 1 && (
+                <li class="header-nav-separator shrink-0" aria-hidden="true">
+                  ·
+                </li>
+              )}
+            </>
           ))
         }
       </ul>
@@ -72,12 +116,17 @@ const currentPath = Astro.url.pathname;
 
 <style>
   .masthead {
-    padding-top: var(--sp-md);
+    padding-top: var(
+      --sp-sm
+    ); /* Slightly reduced to keep overall height compact */
     position: sticky;
     top: 0;
     z-index: 100;
     background-color: var(--bg-primary);
-    transition: transform 0.25s ease-in-out, background-color 0.25s ease-in-out, backdrop-filter 0.25s ease-in-out;
+    transition:
+      transform 0.25s ease,
+      background-color 0.25s ease,
+      backdrop-filter 0.25s ease;
   }
 
   .masthead.is-hidden {
@@ -91,7 +140,7 @@ const currentPath = Astro.url.pathname;
   }
 
   .masthead::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 100%;
     left: 0;
@@ -110,32 +159,23 @@ const currentPath = Astro.url.pathname;
     text-align: center;
   }
 
-  .masthead__header-row {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 var(--sp-md);
-  }
-
+  /* ─── Date Formats ─── */
   .masthead__date {
-    position: absolute;
-    left: var(--sp-md);
     font-family: var(--font-label);
     font-size: var(--fs-xs);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  :global(.theme-toggle) {
-    position: absolute !important;
-    right: var(--sp-md) !important;
-  }
-
+  /* ─── Title ─── */
   .masthead__title-link {
     text-decoration: none;
     color: inherit;
+    flex-shrink: 0;
   }
 
   .masthead__title-link:hover {
@@ -144,7 +184,8 @@ const currentPath = Astro.url.pathname;
 
   .masthead__title {
     font-family: var(--font-heading);
-    font-size: clamp(2.5rem, 6vw, var(--fs-5xl));
+    /* Fluid typography that scales down smoothly */
+    font-size: clamp(2rem, 5vw, var(--fs-5xl));
     font-weight: 900;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -152,6 +193,7 @@ const currentPath = Astro.url.pathname;
     line-height: 1;
   }
 
+  /* ─── Rules / Borders ─── */
   .masthead__rule--bottom {
     border-top: 3px double var(--border-dark);
     margin-top: var(--sp-sm);
@@ -163,43 +205,12 @@ const currentPath = Astro.url.pathname;
     margin-top: var(--sp-sm);
   }
 
-  /* ── Navigation ── */
-  .nav-toggle-checkbox {
-    display: none;
-  }
-
-  .nav-toggle-label {
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-    cursor: pointer;
-    padding: var(--sp-sm);
-    margin: 0 auto;
-  }
-
-  .nav-toggle-label span {
-    display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--text-primary);
-    transition: all var(--transition-fast);
-  }
-
-  .masthead__nav-list {
-    display: flex;
-    justify-content: center;
-    gap: var(--sp-xs);
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    flex-wrap: wrap;
-  }
-
-  .masthead__nav-list li:not(:last-child)::after {
-    content: "·";
+  /* ─── Navigation ─── */
+  .header-nav-separator {
     color: var(--text-muted);
-    margin-left: var(--sp-xs);
     font-size: var(--fs-lg);
+    line-height: 1;
+    user-select: none;
   }
 
   .masthead__nav-link {
@@ -210,8 +221,10 @@ const currentPath = Astro.url.pathname;
     text-transform: uppercase;
     color: var(--text-secondary);
     text-decoration: none;
-    padding: var(--sp-xs) var(--sp-sm);
+    padding: var(--sp-xs) 2px;
     transition: color var(--transition-fast);
+    white-space: nowrap;
+    display: inline-block;
   }
 
   .masthead__nav-link:hover,
@@ -219,51 +232,23 @@ const currentPath = Astro.url.pathname;
     color: var(--accent);
   }
 
-  /* ── Mobile ── */
-  @media (max-width: 700px) {
-    .nav-toggle-label {
-      display: flex;
+  /* Mobile scrollbar hiding for nav */
+  @media (max-width: 768px) {
+    .header-nav-list {
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
     }
 
-    .masthead__nav-list {
-      display: none;
-      flex-direction: column;
-      gap: 0;
-      padding: var(--sp-sm) 0;
+    .header-nav-list::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
     }
 
-    .masthead__nav-list li:not(:last-child)::after {
-      content: none;
-    }
-
-    .masthead__nav-link {
-      display: block;
-      padding: var(--sp-sm);
-    }
-
-    .masthead__header-row {
-      flex-direction: column;
-      gap: var(--sp-sm);
-      padding: 0;
-    }
-
-    .masthead__date,
-    :global(.theme-toggle) {
-      position: static !important;
-    }
-
-    .nav-toggle-checkbox:checked ~ .masthead__nav-list {
-      display: flex;
-    }
-
-    .nav-toggle-checkbox:checked ~ .nav-toggle-label span:nth-child(1) {
-      transform: rotate(45deg) translate(4px, 4px);
-    }
-    .nav-toggle-checkbox:checked ~ .nav-toggle-label span:nth-child(2) {
-      opacity: 0;
-    }
-    .nav-toggle-checkbox:checked ~ .nav-toggle-label span:nth-child(3) {
-      transform: rotate(-45deg) translate(4px, -4px);
+    /* Ensure first and last items don't stick to the very edge when scrolling */
+    .header-nav-list::before,
+    .header-nav-list::after {
+      content: "";
+      flex: 0 0 var(--sp-xs);
     }
   }
 </style>

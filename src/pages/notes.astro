@@ -20,12 +20,17 @@ const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
       <OrnamentalDivider variant="rule" />
     </header>
 
+    <div class="filter-controls">
+      <input type="search" id="notes-search" class="search-input" placeholder="Search notes..." oninput="filterNotes()" />
+    </div>
+
     {subjects.length > 1 && (
       <nav class="subject-nav" aria-label="Filter by subject">
         <span class="label">Subjects:</span>
         <span class="subject-list">
+          <button class="tag tag--active" data-subject="all" onclick="filterNotes('all')">All</button>
           {subjects.map(subject => (
-            <span class="tag">{subject}</span>
+            <button class="tag" data-subject={subject} onclick={`filterNotes('${subject}')`}>{subject}</button>
           ))}
         </span>
       </nav>
@@ -33,7 +38,7 @@ const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
 
     <section class="archive-list" aria-label="Study notes">
       {allNotes.map(note => (
-        <div class="archive-item">
+        <div class="archive-item" data-subject={note.data.subject} data-title={note.data.title.toLowerCase()}>
           <div class="archive-item__meta">
             <span class="category-label category-label--forest">{note.data.subject}</span>
           </div>
@@ -57,6 +62,37 @@ const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
     <OrnamentalDivider variant="floral" />
   </div>
 </Layout>
+
+<script is:inline>
+  let currentSubject = 'all';
+
+  function filterNotes(subject) {
+    if (subject !== undefined) {
+      currentSubject = subject;
+      const buttons = document.querySelectorAll('.subject-list .tag');
+      buttons.forEach(btn => {
+        btn.classList.toggle('tag--active', btn.getAttribute('data-subject') === subject);
+      });
+    }
+
+    const searchQuery = (document.getElementById('notes-search')?.value || '').toLowerCase();
+    const items = document.querySelectorAll('.archive-item');
+
+    items.forEach(item => {
+      const itemSubject = item.getAttribute('data-subject');
+      const itemTitle = item.getAttribute('data-title') || '';
+      
+      const matchesSubject = currentSubject === 'all' || itemSubject === currentSubject;
+      const matchesSearch = itemTitle.includes(searchQuery);
+
+      if (matchesSubject && matchesSearch) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 <style>
   .page-header {
@@ -107,5 +143,32 @@ const subjects = [...new Set(allNotes.map(n => n.data.subject))].sort();
     color: var(--text-muted);
     font-style: italic;
     padding: var(--sp-3xl) 0;
+  }
+
+  .filter-controls {
+    text-align: center;
+    margin-bottom: var(--sp-md);
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--sp-sm) var(--sp-md);
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    outline: none;
+    transition: border-color var(--transition-fast);
+  }
+
+  .search-input:focus {
+    border-color: var(--accent);
+  }
+
+  .subject-list .tag {
+    cursor: pointer;
+    background: none;
   }
 </style>

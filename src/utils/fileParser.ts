@@ -39,8 +39,11 @@ export function parseTex(filePath: string): string {
   if (!fs.existsSync(filePath)) {
     return renderFileFallbackHTML(filePath, "LaTeX document could not be loaded: file not found");
   }
-  
+
   let content = fs.readFileSync(filePath, 'utf-8');
+
+  // Strip frontmatter if present (with or without % prefix)
+  content = content.replace(/^(?:%?\s*---\r?\n[\s\S]*?\r?\n%?\s*---)/, '');
 
   // Strip common LaTeX preamble (very basic)
   const documentMatch = content.match(/\\begin\{document\}([\s\S]*?)\\end\{document\}/);
@@ -50,6 +53,45 @@ export function parseTex(filePath: string): string {
 
   // Process custom image macros and standard figures
   content = processLatexImageMacros(content, filePath);
+
+  // Process LaTeX tabular environment
+  content = content.replace(/\\begin\{tabular\}\{([^}]+)\}([\s\S]*?)\\end\{tabular\}/g, (match, alignSpec, inner) => {
+    const aligns = alignSpec.replace(/[^lcr]/g, '').split('');
+    const rows = inner
+      .split(/\\\\/)
+      .map(row => row.trim())
+      .filter(row => {
+        const clean = row.replace(/\\hline/g, '').trim();
+        return clean.length > 0;
+      });
+
+    let html = '<table class="table-auto border-collapse border border-border/50 my-6 mx-auto">\n';
+
+    rows.forEach((row, rowIndex) => {
+      // Remove any inline hlines
+      const cleanRow = row.replace(/\\hline/g, '').trim();
+      html += '  <tr>\n';
+      const cells = cleanRow.split('&').map(cell => cell.trim());
+      cells.forEach((cell, cellIndex) => {
+        const align = aligns[cellIndex] === 'r' ? 'text-right' : (aligns[cellIndex] === 'c' ? 'text-center' : 'text-left');
+        const tag = rowIndex === 0 ? 'th' : 'td';
+        const classes = `border border-border/50 px-4 py-2 ${align} ${rowIndex === 0 ? 'bg-surface/50 font-semibold text-text' : 'text-text'}`;
+        html += `    <${tag} class="${classes}">${cell}</${tag}>\n`;
+      });
+      html += '  </tr>\n';
+    });
+
+    html += '</table>';
+    return html;
+  });
+
+  // Process \href{url}{text} and \url{url}
+  content = content.replace(/\\href\{([^}]+)\}\{([^}]+)\}/g, (match, url, text) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="link">${text}</a>`;
+  });
+  content = content.replace(/\\url\{([^}]+)\}/g, (match, url) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="link">${url}</a>`;
+  });
 
   // Process undefined references and citations (fallback)
   content = content.replace(/\\ref\{([^}]+)\}/g, (match, label) => {
@@ -70,13 +112,15 @@ export function parseTex(filePath: string): string {
     let level = 2;
     if (type === 'subsection') level = 3;
     if (type === 'subsubsection') level = 4;
-    
+
     const slug = title.toLowerCase().trim().replace(/\\s+/g, '-').replace(/[^\\w\\-]+/g, '').replace(/\\-\\-+/g, '-');
     return `<h${level} id="${slug}">${title}</h${level}>`;
   });
 
-  // Render display math: $$...$$ or \[...\]
-  content = content.replace(/\$\$(.*?)\$\$/gs, (match, math) => {
+  // Render display math: $$...$$, \[...\], \begin{equation}...\end{equation}, \begin{align}...\end{align}
+  content = content.replace(/\$\$(.*?)\$\$|\\\[(.*?)\\\]|\\begin\{equation\}(.*?)\\end\{equation\}|\\begin\{align\}(.*?)\\end\{align\}/gs, (match, m1, m2, m3, m4) => {
+    const math = m1 || m2 || m3 || m4;
+    if (!math) return match;
     try {
       return katex.renderToString(math, { displayMode: true, throwOnError: true });
     } catch (e: any) {
@@ -85,7 +129,9 @@ export function parseTex(filePath: string): string {
   });
 
   // Render inline math: $...$ or \(...\)
-  content = content.replace(/\$(.*?)\$/g, (match, math) => {
+  content = content.replace(/\$(.*?)\$|\\\((.*?)\\\)/g, (match, m1, m2) => {
+    const math = m1 || m2;
+    if (!math) return match;
     try {
       return katex.renderToString(math, { displayMode: false, throwOnError: true });
     } catch (e: any) {
@@ -99,13 +145,13 @@ export function parseTex(filePath: string): string {
     .map(p => p.trim())
     .filter(p => p.length > 0)
     .map(p => {
-      // If it's already a div (like display math), don't wrap in p
-      if (p.startsWith('<div')) return p;
+      // If it's already a div or display math span, don't wrap in p
+      if (p.startsWith('<div') || p.startsWith('<span class="katex-display"')) return p;
       return `<p>${p}</p>`;
     });
 
   // Add KaTeX CSS link for styling
   const katexCss = `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">`;
-  
+
   return katexCss + '\n<div class="tex-content">\n' + paragraphs.join('\n') + '\n</div>';
 }

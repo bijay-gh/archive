@@ -22,10 +22,16 @@ const allReports = (await getListedContent("reports"))
       </p>
       <OrnamentalDivider variant="section" />
     </header>
+
+    <div class="filter-controls">
+      <input type="search" id="reports-search" class="search-input" placeholder="Search reports..." oninput="filterReports()" />
+    </div>
+
     <section class="archive-list">
       {
         allReports.map((report) => (
-          <PostCard
+          <div class="archive-item" data-title={report.data.title.toLowerCase()}>
+            <PostCard
             title={report.data.title}
             description={report.data.description}
             pubDate={report.data.pubDate}
@@ -34,6 +40,7 @@ const allReports = (await getListedContent("reports"))
             format={report.data.format}
             media={report.data.media}
           />
+          </div>
         ))
       }
     </section>
@@ -41,6 +48,22 @@ const allReports = (await getListedContent("reports"))
     <OrnamentalDivider variant="floral" />
   </div>
 </Layout>
+
+<script is:inline>
+  function filterReports() {
+    const searchQuery = (document.getElementById('reports-search')?.value || '').toLowerCase();
+    const items = document.querySelectorAll('.archive-item');
+
+    items.forEach(item => {
+      const itemTitle = item.getAttribute('data-title') || '';
+      if (itemTitle.includes(searchQuery)) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 <style>
   .page-header {
@@ -66,5 +89,27 @@ const allReports = (await getListedContent("reports"))
     color: var(--text-muted);
     font-style: italic;
     padding: var(--sp-3xl) 0;
+  }
+
+  .filter-controls {
+    text-align: center;
+    margin-bottom: var(--sp-lg);
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--sp-sm) var(--sp-md);
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    outline: none;
+    transition: border-color var(--transition-fast);
+  }
+
+  .search-input:focus {
+    border-color: var(--accent);
   }
 </style>

@@ -5,6 +5,8 @@ import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import remarkDirective from 'remark-directive';
 import remarkMediaDirectives from './src/utils/remarkMediaDirectives.ts';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -40,6 +42,10 @@ export default defineConfig({
       remarkSafeLinks,
       remarkDirective,
       remarkMediaDirectives,
+      remarkMath,
+    ],
+    rehypePlugins: [
+      [rehypeKatex, { strict: false }],
     ],
   },
 });

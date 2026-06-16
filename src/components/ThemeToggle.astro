@@ -1,7 +1,7 @@
 ---
 ---
 
-<button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode" title="Night Reading Mode">
+<button class="theme-toggle js-theme-toggle" aria-label="Toggle dark mode" title="Night Reading Mode">
   <span class="theme-toggle__icon theme-toggle__icon--light">☀</span>
   <span class="theme-toggle__icon theme-toggle__icon--dark">☽</span>
 </button>
@@ -16,17 +16,18 @@
     }
   })();
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.getElementById('theme-toggle');
-    if (!toggle) return;
-
-    toggle.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
+  if (!window.__themeToggleInitialized) {
+    window.__themeToggleInitialized = true;
+    document.addEventListener('click', (e) => {
+      const toggle = e.target.closest('.js-theme-toggle');
+      if (toggle) {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+      }
     });
-  });
+  }
 </script>
 
 <style>

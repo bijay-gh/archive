@@ -78,7 +78,7 @@ breadcrumbItems.push({ label: note.data.title, url: '#' });
       </div>
     </header>
     <OrnamentalDivider variant="rule" compact={true} />
-    <div class="article__body prose drop-cap">
+    <div class="article__body prose">
       {Content && <Content />}
       {format === 'docx' && <div set:html={htmlContent} />}
       {format === 'tex' && <div set:html={htmlContent} />}
@@ -96,10 +96,10 @@ breadcrumbItems.push({ label: note.data.title, url: '#' });
 <style>
   .article { padding: var(--sp-md) 0 var(--sp-xl); width: 100%; max-width: 100%; }
   .article__header { text-align: center; margin-bottom: var(--sp-xs); }
-  .article__title { font-size: var(--fs-3xl); margin: var(--sp-xs) 0; line-height: 1.1; }
+  .article__title { font-size: var(--fs-2xl); margin: var(--sp-xs) 0; line-height: 1.1; }
   .article__meta { display: flex; justify-content: center; align-items: center; gap: var(--sp-xs); flex-wrap: wrap; margin-bottom: var(--sp-xs); font-size: 0.65rem; opacity: 0.7; }
   .article__sep { color: var(--text-muted); font-size: 0.5rem; }
   .article__footer { text-align: center; padding-top: var(--sp-xl); }
   @media (max-width: 600px) { .article__title { font-size: var(--fs-xl); } }
-  .pdf-viewer { width: 100%; height: 80vh; border: 1px solid var(--border); border-radius: 4px; }
+  .pdf-viewer { width: 100%; height: 92vh; border: 1px solid var(--border); }
 </style>

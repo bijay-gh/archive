@@ -16,9 +16,14 @@ const allProjects = (await getListedContent('projects'))
       <p class="page-header__sub">A catalogue of ongoing and completed works.</p>
       <OrnamentalDivider variant="stars" />
     </header>
+
+    <div class="filter-controls">
+      <input type="search" id="projects-search" class="search-input" placeholder="Search projects..." oninput="filterProjects()" />
+    </div>
+
     <section class="archive-list">
       {allProjects.map(project => (
-        <div class="project-item">
+        <div class="project-item" data-title={project.data.title.toLowerCase()}>
           <span class:list={['status-badge', `status-badge--${project.data.status}`]}>
             {project.data.status.replace('-', ' ')}
           </span>
@@ -38,6 +43,22 @@ const allProjects = (await getListedContent('projects'))
     <OrnamentalDivider variant="floral" />
   </div>
 </Layout>
+
+<script is:inline>
+  function filterProjects() {
+    const searchQuery = (document.getElementById('projects-search')?.value || '').toLowerCase();
+    const items = document.querySelectorAll('.project-item');
+
+    items.forEach(item => {
+      const itemTitle = item.getAttribute('data-title') || '';
+      if (itemTitle.includes(searchQuery)) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
 
 <style>
   .page-header { text-align: center; padding-top: var(--sp-md); }
@@ -60,4 +81,26 @@ const allProjects = (await getListedContent('projects'))
   .status-badge--completed { border-color: var(--accent); color: var(--accent); }
   .status-badge--archived { border-color: var(--text-muted); color: var(--text-muted); }
   .empty { text-align: center; color: var(--text-muted); font-style: italic; padding: var(--sp-3xl) 0; }
+
+  .filter-controls {
+    text-align: center;
+    margin-bottom: var(--sp-lg);
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: var(--sp-sm) var(--sp-md);
+    font-family: var(--font-body);
+    font-size: var(--fs-base);
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    outline: none;
+    transition: border-color var(--transition-fast);
+  }
+
+  .search-input:focus {
+    border-color: var(--accent);
+  }
 </style>

@@ -5,8 +5,8 @@ author: "Bijaya Ghimire"
 pubDate: 2025-12-07
 description: "History of GPUs: How Display Devices Slowly Evolved into Mathematical Machines"
 subject: "Computing"
-# toc: true
-# toc_depth: 3
+toc: true
+toc_depth: 3
 draft: false
 ---
 
@@ -197,3 +197,5 @@ This is the upcoming architecture, pushing physics to the limit.
 - **New Math:** **FP4 (4-bit Floating Point)**.
     - Blackwell supports **4-bit** math for inference. This effectively doubles the speed again over H100's FP8.
     - **Impact:** This is designed purely for **Inference** (running the AI), aiming to make running GPT-4 cheap enough for every application.
+
+[<span style="border: 2px solid #c4bbbbff; border-radius: 20px; padding: 2px 8px;">INTERNAL ARCHIECURE OF MORDEN GPU....AMBER ARCHITECTURE</span>](/notes/gpu_architecture)

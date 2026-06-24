@@ -81,17 +81,11 @@ function handleSubpage(node: any, attrs: Record<string, string>) {
   const slug = attrs.slug || '';
   const label = attrs.label || 'Continue Reading';
   
-  // Create an HTML block that mimics the SubPageLink.astro structure
   const inner = `
-    <a href="/notes/${escAttr(slug)}" class="subpage-link block my-8 group no-underline">
-      <div class="border border-border/50 rounded-xl p-6 bg-surface/30 hover:bg-surface/60 transition-all duration-300 shadow-sm hover:shadow-md flex items-center justify-between">
-        <div class="flex-1">
-          <span class="text-sm font-medium text-forest uppercase tracking-wider mb-1 block">Deep Dive</span>
-          <h3 class="text-xl font-semibold text-text group-hover:text-forest transition-colors duration-200 m-0">${escAttr(label)}</h3>
-        </div>
-        <div class="ml-4 bg-forest/10 rounded-full p-3 group-hover:bg-forest/20 transition-colors duration-300">
-          <svg class="w-6 h-6 text-forest" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </div>
+    <a href="/notes/${escAttr(slug)}" class="subpage-link inline-block my-4 group no-underline">
+      <div class="border border-border/50 rounded-lg px-4 py-2 bg-surface/30 hover:bg-surface/60 transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2">
+        <span class="text-base font-medium text-text group-hover:text-forest transition-colors duration-200 m-0">${escAttr(label)}</span>
+        <svg class="w-4 h-4 text-forest/80 group-hover:text-forest transition-colors duration-200 transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
       </div>
     </a>`;
 

@@ -54,14 +54,8 @@ Since dot products can produce arbitrarily large values — causing numerical in
 
 $W^O$ is the output projection matrix to map the head output back to the same dimension as input embedding.
 
-<table>
-<tr>
-<td width="60%" valign="top">
-<img src="/media/notes/transformer/Attention.png" width="100%" alt="Attention Mechanism" />
-<p style="text-align: center; font-size: 0.9em; color: #666;"><strong>Figure 1:</strong> Attention Mechanism, calculating the third element  of sequence.</p>
-<p style="text-align: center; font-size: 0.8em; color: #999;"><em>Source: Speech and Language Processing: An Introduction to Natural Language Processing, Computational Linguistics, and Speech Recognition with Language Models (Third Edition draft) by Daniel Jurafsky and James H. Martin</em></p>
-</td>
-<td width="40%" valign="top">
+::image{src="/media/notes/transformer/attention.png" float="right" display="inline" width="600px" border="true" rounded="true" caption="Attention Mechanism, calculating the third element  of sequence."}
+
 
 The input to attention $x_i$ and the output from attention $a_i$ both have the same dimensionality $[1 ×d]$. We often call $d$ the model dimensionality. Lets see the dimensions of the matrices involved in the attention mechanism:
 * $x_i$: $[1 × d]$ (input embedding)
@@ -75,9 +69,9 @@ The input to attention $x_i$ and the output from attention $a_i$ both have the s
 * $a_i$: $[1 × d]$ (final attention output)
 
 But almost always, we have $d_k = d_v = d_{model}$, so the dimensions of query, key, and value vectors are the same as the input embedding dimension. This allows for efficient computation and simplifies the architecture of the transformer model.
-</td>
-</tr>
-</table>
+
+
+
 
 
 ### Multi-Head Attention
@@ -85,52 +79,23 @@ But almost always, we have $d_k = d_v = d_{model}$, so the dimensions of query, 
 In practice, the transformer uses multiple attention heads aiming to learn different representations and capture different aspects of the input data by using different set of linear projections(weight matrices) for each head. The outputs of all attention heads are then concatenated and projected back to the original embedding dimension using an output projection matrix. 
 So in multi-head attention we have $A$ separate attention heads that reside in parallel layers at the same depth in a model.Thus 
 each head $c$ has its own set of projection matrices $W^{Qc}$, $W^{Kc}$, and $W^{Vc}$ to compute its own query, key, and value vectors. The outputs of all heads are then concatenated and projected back to the original embedding dimension using an output projection matrix $W^O$.
-So the computation for multi-head attention can be expressed as:
+So the computation for multi-head attention can be expressed as
 
-<!-- $$
-\begin{aligned}
-q_i^c = W^{Qc} x_i \quad
-k_j^c &= W^{Kc} x_j \quad
-v_j^c = W^{Vc} x_j  \quad \forall c \quad 1\leq c \leq A \\
-\text{score}^c(x_i,x_j) &= \frac{q_i^c \cdot k_j^c}{\sqrt{d_k}} \\
-\alpha_{ij}^c &= softmax(score^c(x_i, x_j)) \ \forall j \le i \\
-\text{head}_i^c &= \sum_{j \le i} \alpha_{ij}^c v_j^c \\
-a_i &= (head_i^1\oplus head_i^2 ...\oplus head_i^A) W^O
-\end{aligned}
-$$ -->
-
-<table>
-<tr>
-<td width="40%" valign="top">
-<img src="/media/notes/transformer/multi-head_attention.png" width="100%" height="60%" alt="Multi-Head Attention" />
-
-<p style="text-align: center; font-size: 0.9em; color: #666;"><strong>Figure 2:</strong> Multi-head attention computation for input $x_i$, producing output $a_i$.</p>
-</td>
-<td width="60%" valign="top">
-<ul>
+::image{src="/media/notes/transformer/multi-head_attention.png"  float="right" display="inline" width="500px" border="true" rounded="true" caption="Multi-head attention computation for input $x_i$, producing output $a_i$." margine="10px"}
 
 $$
-\begin{aligned}
 q_i^c = W^{Qc} x_i \quad
-k_j^c &= W^{Kc} x_j \quad
+k_j^c = W^{Kc} x_j \quad
 v_j^c = W^{Vc} x_j  \quad \forall c \quad 1\leq c \leq A \\
-\text{score}^c(x_i,x_j) &= \frac{q_i^c \cdot k_j^c}{\sqrt{d_k}} \\
-\alpha_{ij}^c &= softmax(score^c(x_i, x_j)) \ \forall j \le i \\
-\text{head}_i^c &= \sum_{j \le i} \alpha_{ij}^c v_j^c \\
-a_i &= (head_i^1\oplus head_i^2 ...\oplus head_i^A) W^O
-\end{aligned}
+
+
+\text{score}^c(x_i,x_j) = \frac{q_i^c \cdot k_j^c}{\sqrt{d_k}} \\
+\alpha_{ij}^c = softmax(score^c(x_i, x_j)) \ \forall j \le i \\
+\text{head}_i^c = \sum_{j \le i} \alpha_{ij}^c v_j^c \\
+a_i = (head_i^1\oplus head_i^2 ...\oplus head_i^A) W^O
 $$
 
-<li>
+* Each of the $A$ heads produces an output of shape $[1 \times d_v]$
+* All $A$ outputs are <strong>concatenated</strong> → $[1 \times Ad_v]$
+* Then projected via $W^O \in \mathbb{R}^{Ad_v \times d}$ → final output $[1 \times d]$
 
-Each of the $A$ heads produces an output of shape $[1 \times d_v]$</li>
-<li>
-
-All $A$ outputs are <strong>concatenated</strong> → $[1 \times Ad_v]$</li>
-<li>
-
-Then projected via $W^O \in \mathbb{R}^{Ad_v \times d}$ → final output $[1 \times d]$</li>
-</ul>
-</td>
-</tr>
-</table>

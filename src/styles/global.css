@@ -159,7 +159,12 @@ body::before {
 }
 
 /* ── Typography ── */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   font-weight: 800;
   line-height: 1.2;
@@ -167,10 +172,25 @@ h1, h2, h3, h4, h5, h6 {
   text-wrap: balance;
 }
 
-h1 { font-size: var(--fs-4xl); margin-bottom: var(--sp-lg); }
-h2 { font-size: var(--fs-2xl); margin-bottom: var(--sp-md); }
-h3 { font-size: var(--fs-xl); margin-bottom: var(--sp-md); }
-h4 { font-size: var(--fs-lg); margin-bottom: var(--sp-sm); }
+h1 {
+  font-size: var(--fs-4xl);
+  margin-bottom: var(--sp-lg);
+}
+
+h2 {
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--sp-md);
+}
+
+h3 {
+  font-size: var(--fs-xl);
+  margin-bottom: var(--sp-md);
+}
+
+h4 {
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-sm);
+}
 
 p {
   margin-bottom: var(--sp-md);
@@ -188,8 +208,13 @@ a:hover {
   text-decoration: underline;
 }
 
-strong { font-weight: 700; }
-em { font-style: italic; }
+strong {
+  font-weight: 700;
+}
+
+em {
+  font-style: italic;
+}
 
 /* ── Labels & Small Text ── */
 .label {
@@ -305,9 +330,18 @@ blockquote p {
   margin-top: var(--sp-xl);
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   padding-left: var(--sp-xl);
   margin-bottom: var(--sp-md);
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ol {
+  list-style-type: decimal;
 }
 
 .prose li {
@@ -353,8 +387,18 @@ blockquote p {
   margin: 0 auto;
   padding: 0 1.5rem;
 }
-@media (min-width: 768px) { .container { padding: 0 2rem; } }
-@media (min-width: 1024px) { .container { padding: 0 2rem; } }
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+}
 
 .container-toc {
   width: 100%;
@@ -362,8 +406,18 @@ blockquote p {
   margin: 0 auto;
   padding: 0 1.5rem;
 }
-@media (min-width: 768px) { .container-toc { padding: 0 2rem; } }
-@media (min-width: 1024px) { .container-toc { padding: 0 2rem; } }
+
+@media (min-width: 768px) {
+  .container-toc {
+    padding: 0 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-toc {
+    padding: 0 2rem;
+  }
+}
 
 .toc-grid {
   display: grid;
@@ -371,12 +425,20 @@ blockquote p {
   gap: var(--toc-gap);
   justify-content: center;
 }
+
 @media (max-width: 1023px) {
-  .toc-grid { display: block; }
+  .toc-grid {
+    display: block;
+  }
 }
 
-.text-center { text-align: center; }
-.text-right { text-align: right; }
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
 
 .sr-only {
   position: absolute;
@@ -385,7 +447,7 @@ blockquote p {
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   border: 0;
 }
 
@@ -396,12 +458,12 @@ blockquote p {
   gap: 0;
 }
 
-.column-grid > * {
+.column-grid>* {
   padding: var(--sp-lg) var(--sp-xl);
   border-right: 1px solid var(--border);
 }
 
-.column-grid > *:last-child {
+.column-grid>*:last-child {
   border-right: none;
 }
 
@@ -461,17 +523,19 @@ blockquote p {
     grid-template-columns: 1fr;
   }
 
-  .column-grid > * {
+  .column-grid>* {
     border-right: none;
     border-bottom: 1px solid var(--border);
     padding: var(--sp-lg) 0;
   }
 
-  .column-grid > *:last-child {
+  .column-grid>*:last-child {
     border-bottom: none;
   }
 
-  h1 { font-size: var(--fs-3xl); }
+  h1 {
+    font-size: var(--fs-3xl);
+  }
 }
 
 @media (max-width: 600px) {
@@ -482,7 +546,9 @@ blockquote p {
     --fs-2xl: 1.25rem;
   }
 
-  h1 { font-size: var(--fs-2xl); }
+  h1 {
+    font-size: var(--fs-2xl);
+  }
 }
 
 /* ── Table Styles (Newspaper ruled) ── */
@@ -536,6 +602,6 @@ blockquote p {
   font-size: 1em;
 }
 
-.katex-display > .katex {
+.katex-display>.katex {
   font-size: 1.1em;
 }

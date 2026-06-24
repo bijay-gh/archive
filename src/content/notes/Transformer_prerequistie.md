@@ -9,12 +9,9 @@ tags: ["transformer", "prerequisite", "text-representation", "embedding"]
 draft: false
 
 ---
-
-
-
 ### RECOMMENDATION BEFORE READING THE NOTE
 This note introduce the base of transformer in brief.I am aiming to create a complete note from mathematic behind transformer based model, some popular LLM and later i will focus mainly in Transformer in computer vision. This is not a course or some complete guide to begineer to follow, insted this is just the note i create that i want to document.
-If some one is reading this, *most probably myself in future* please consider understanding how the text representation works. How we embede the text in to vector representation? Try to unersatand what are n-gram, word2vec(CBOW, skip-gram), GloVe and how they works. Breifly.....
+If some one is reading this, *most probably myself in future* please consider understanding how the text representation works. How we embede the text in to vector representation? Try to unersatand what are n-gram, word2vec(CBOW, skip-gram), GloVe and how they works. Breifly---------->>>>
 
 If you go deep on the text representation befor transformer, take some time and try to understand how contex is missing with these representation and how method linke ELMo in BiLSTM handeled it...
 

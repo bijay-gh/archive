@@ -14,7 +14,7 @@ From 1970 to 1990, graphics hardware evolved through a series of specialized, ta
 ::subpage{slug="gpu_main/pre_gpu_era" label="Deep Dive: The Pre-GPU Era"}
 
 ## The Nvidia GeForce 256(1999)
-::image{src="/media/notes/gpu/VisionTek_GeForce_256.jpg" float="right" width="300px" border="false" rounded="false" caption="The Nvidia GeForce 256"}
+::image{src="/media/notes/gpu/visiontek_geforce_256.jpg" float="right" width="500px" border="false" rounded="false" caption="The Nvidia GeForce 256"}
 
 GeForce 256 turned PC graphics from “a fast raster card” into a true graphics processor by moving geometry math (T&L) onto the chip and defining what a GPU is. It offloaded a whole stage of the 3D pipeline from the CPU, changed how games were written, and set the template for later programmable, CUDA‑style GPUs
 

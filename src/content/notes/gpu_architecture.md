@@ -46,7 +46,7 @@ A GPU **die** is the raw piece of silicon that contains every transistor, logic 
 </div>
 <div style="flex: 1 1 280px;">
 
-::image{src="/media/notes/gpu/DIE.png" width="100%" rounded="true" border="true" caption="GA102 die photograph. The seven large rectangular blocks are the GPCs. The L2 cache slices and memory controllers run along the left and right edges, directly adjacent to where the GDDR6X chips connect."}
+::image{src="/media/notes/gpu/die.png" width="100%" rounded="true" border="true" caption="GA102 die photograph. The seven large rectangular blocks are the GPCs. The L2 cache slices and memory controllers run along the left and right edges, directly adjacent to where the GDDR6X chips connect."}
 
 </div>
 </div>
@@ -85,12 +85,12 @@ CPU → PCIe 4.0 interface (on-die)
 <div style="display: flex; gap: 1rem; align-items: start; flex-wrap: wrap; margin: 1rem 0;">
 <div style="flex: 1 1 280px;">
 
-::image{src="/media/notes/gpu/GPU.png" width="100%" rounded="true" border="true" caption="GA102 die annotated — the seven shaded regions are the seven GPCs. Each takes up roughly 1/7 of the die area and operates largely independently."}
+::image{src="/media/notes/gpu/gpu.png" width="100%" rounded="true" border="true" caption="GA102 die annotated — the seven shaded regions are the seven GPCs. Each takes up roughly 1/7 of the die area and operates largely independently."}
 
 </div>
 <div style="flex: 1 1 280px;">
 
-::image{src="/media/notes/gpu/GPC.png" width="100%" rounded="true" border="true" caption="A single GPC zoomed in, showing its 12 SMs arranged across 6 TPCs (2 SMs per TPC), plus the Raster Engine and ROP units at the boundary."}
+::image{src="/media/notes/gpu/gpc.png" width="100%" rounded="true" border="true" caption="A single GPC zoomed in, showing its 12 SMs arranged across 6 TPCs (2 SMs per TPC), plus the Raster Engine and ROP units at the boundary."}
 
 </div>
 </div>
@@ -123,7 +123,7 @@ Each partition also contains an **L0 instruction cache** that holds recently fet
 
 <div style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 5rem;">
 
-::image{src="/media/notes/gpu/SM.png" width="100%" rounded="true" border="true" caption="A single SM on the GA102 die, showing the four warp processing partitions (the four large square blocks) and the RT Core at the bottom of the SM region."}
+::image{src="/media/notes/gpu/sm.png" width="100%" rounded="true" border="true" caption="A single SM on the GA102 die, showing the four warp processing partitions (the four large square blocks) and the RT Core at the bottom of the SM region."}
 
 ::image{src="/media/notes/gpu/warp.png" width="100%" rounded="true" border="true" caption="One warp partition zoomed in on the die: 32 CUDA Core cells (left columns) and the single 3rd-gen Tensor Core block (right). All 32 CUDA Cores execute the same instruction in lockstep across 32 threads."}
 

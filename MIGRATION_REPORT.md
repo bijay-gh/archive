@@ -17,20 +17,32 @@
 
 ## 3. Cloudflare Migration Summary
 
-*(To be filled during migration)*
+- **Path Chosen**: Fully Static Site using Cloudflare Workers with Static Assets (`assets: { directory: "./dist" }`).
+- **Why**: Inspection of the codebase (`astro.config.mjs` and `src/pages`) revealed no `output: 'server'` nor `prerender = false` usage. The site generates entirely static files.
+- **Environment Variables**: No Netlify-specific environment variables or `netlify.toml` were present in the repository. If there are environment variables configured in the Netlify dashboard, they will need to be added to Cloudflare manually (via `wrangler.jsonc` `vars` or `npx wrangler secret put`).
 
 ## 4. Netlify-specific Features with No Direct Equivalent
 
-*(To be filled during migration)*
+- The project previously contained `public/_redirects` specifying `/* /index.html 200` (SPA fallback).
+- **Resolution**: I ported this behavior directly into `wrangler.jsonc` by configuring `"not_found_handling": "single-page-application"`. There are no unresolved Netlify-specific features.
 
 ## 5. Manual Steps Required from the Owner
 
-*(To be filled during migration)*
+Since deploying and changing DNS require access to your personal Cloudflare account, please execute the following steps locally to complete the cutover:
+
+1. **Authentication**: Run `npx wrangler login` to authenticate the CLI with your Cloudflare account.
+2. **First Deployment**: Run `npx wrangler deploy` to push the site. It will give you a `.workers.dev` URL where you can verify the site works live.
+3. **DNS Cutover**:
+   - Go to your Cloudflare Dashboard > Workers & Pages > `your-site-name` > Settings > Triggers.
+   - Add your custom domain.
+   - Update your domain registrar's DNS records to point to Cloudflare (if not already managed by Cloudflare).
+   - Wait for DNS propagation and verify SSL.
 
 ## 6. Rollback Plan
 
-*(To be filled during migration)*
+- **Netlify Fallback**: Your Netlify site and its configuration in the dashboard have not been deleted.
+- **To Revert**: Simply execute `git revert HEAD` to undo the Phase 2 commit (`chore: migrate hosting from Netlify to Cloudflare`). This will bring back `@astrojs/netlify` and remove `wrangler.jsonc`. Pushing this reverted state to `main` will restore Netlify builds.
 
 ## 7. Outstanding/Unresolved Issues
 
-*(To be filled during migration)*
+- **None**: The upgrade and migration were completed successfully. The only remaining tasks are the manual execution of `wrangler login` and `wrangler deploy` by the project owner.

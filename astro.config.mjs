@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import netlify from '@astrojs/netlify';
 import sitemap from '@astrojs/sitemap';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 import remarkDirective from 'remark-directive';
 import remarkMediaDirectives from './src/utils/remarkMediaDirectives.ts';
 import remarkMath from 'remark-math';
@@ -11,6 +11,7 @@ import rehypeKatex from 'rehype-katex';
 import fs from 'node:fs';
 import path from 'node:path';
 import { getWarnings } from './src/utils/linkValidator.ts';
+import { unified } from '@astrojs/markdown-remark';
 import remarkSafeLinks from './src/utils/remarkSafeLinks.ts';
 
 function brokenLinksReporter() {
@@ -36,16 +37,21 @@ function brokenLinksReporter() {
 export default defineConfig({
   site: 'https://your-site.netlify.app',
   adapter: netlify(),
-  integrations: [sitemap(), tailwind(), brokenLinksReporter()],
+  integrations: [sitemap(), brokenLinksReporter()],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   markdown: {
-    remarkPlugins: [
-      remarkSafeLinks,
-      remarkDirective,
-      remarkMediaDirectives,
-      remarkMath,
-    ],
-    rehypePlugins: [
-      [rehypeKatex, { strict: false }],
-    ],
+    processor: unified({
+      remarkPlugins: [
+        remarkSafeLinks,
+        remarkDirective,
+        remarkMediaDirectives,
+        remarkMath,
+      ],
+      rehypePlugins: [
+        [rehypeKatex, { strict: false }],
+      ],
+    }),
   },
 });

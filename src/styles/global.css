@@ -3,8 +3,19 @@
    A Vintage Newspaper / Old Book Aesthetic
    ═══════════════════════════════════════════════════════════ */
 
-/* ── Google Fonts ── */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-forest: var(--color-forest);
+  --color-border: var(--border);
+  --color-text: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-surface: var(--bg-card);
+  --color-bg: var(--bg-primary);
+}
+
+/* ── Google Fonts ── */
 
 /* ── CSS Custom Properties ── */
 :root {

@@ -54,7 +54,7 @@ Since dot products can produce arbitrarily large values — causing numerical in
 
 $W^O$ is the output projection matrix to map the head output back to the same dimension as input embedding.
 
-::image{src="/media/notes/transformer/attention.png" float="right" display="inline" width="600px" border="true" rounded="true" caption="Attention Mechanism, calculating the third element  of sequence."}
+::image{src="/media/notes/transformer/attention_01.png" float="right" display="inline" width="600px" border="true" rounded="true" caption="Attention Mechanism, calculating the third element  of sequence."}
 
 
 The input to attention $x_i$ and the output from attention $a_i$ both have the same dimensionality $[1 ×d]$. We often call $d$ the model dimensionality. Lets see the dimensions of the matrices involved in the attention mechanism:

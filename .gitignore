@@ -3,6 +3,7 @@ dist/
 
 # generated types
 .astro/
+.vscode/
 
 # dependencies
 node_modules/
@@ -26,18 +27,18 @@ pnpm-debug.log*
 # Local Netlify folder
 .netlify
 
-src/content/posts/my-first-post.md
-src/content/posts/sample_media.md
-src/content/posts/the-art-of-observation.md
-src/content/projects/personal-knowledge-system.md
-src/content/reports/sample-multimedia.md
-src/content/reports/state-of-web-development-2026.md
-src/content/reports/test-report.json
-src/content/reports/test-report.tex
-src/content/notes/demo-features.md
-src/content/notes/demo-subpage.md
-src/content/notes/sample.tex
-src/content/notes/Verisk_CL.md
+/src/content/posts/my-first-post.md
+/src/content/posts/sample_media.md
+/src/content/posts/the-art-of-observation.md
+/src/content/projects/personal-knowledge-system.md
+/src/content/reports/sample-multimedia.md
+/src/content/reports/state-of-web-development-2026.md
+/src/content/reports/test-report.json
+/src/content/reports/test-report.tex
+/src/content/notes/demo-features.md
+/src/content/notes/demo-subpage.md
+/src/content/notes/sample.tex
+/src/content/notes/Verisk_CL.md
 
 
 # reports

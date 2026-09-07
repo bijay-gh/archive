@@ -1,7 +1,0 @@
-{
-  "title": "A LaTeX Test Report",
-  "description": "Testing LaTeX rendering with KaTeX",
-  "pubDate": "2026-05-27",
-  "format": "tex",
-  "file": "test-report.tex"
-}
